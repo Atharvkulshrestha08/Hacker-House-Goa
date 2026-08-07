@@ -8,6 +8,7 @@ import OutputStep from './components/OutputStep'
 import SquadPanel from './components/SquadPanel'
 import ProgressOverlay from './components/ProgressOverlay'
 import Marquee from './components/Marquee'
+import SharePage from './components/SharePage'
 import { getStack, getBuilderClass, rerollBuilderClass, makeSeed } from './data/stacks'
 import type { DecodedImage } from './lib/image'
 import type { ProcessedPhoto } from './lib/image'
@@ -16,6 +17,12 @@ import type { SquadMember } from './lib/renderer'
 
 type Stage = 'landing' | 'build' | 'output'
 type Step = 'photo' | 'reposition' | 'info' | 'class'
+
+// ── hash-based share routing ─────────────────────────────────────────────────
+if (typeof window !== 'undefined' && window.location.hash === '#share') {
+  // Render only the share page – bypass the full app
+  // (handled in the component return below)
+}
 
 interface Owner {
   name: string
@@ -42,12 +49,23 @@ const initialOwner: Owner = {
 }
 
 export default function App() {
+  // ── Share page hash routing ───────────────────────────────────────────────
+  const [hash, setHash] = useState(() => window.location.hash)
+  useEffect(() => {
+    const onHash = () => setHash(window.location.hash)
+    window.addEventListener('hashchange', onHash)
+    return () => window.removeEventListener('hashchange', onHash)
+  }, [])
+  if (hash === '#share') return <SharePage />
+  // ─────────────────────────────────────────────────────────────────────────
+
   const [stage, setStage] = useState<Stage>('landing')
   const [step, setStep] = useState<Step>('photo')
   const [owner, setOwner] = useState<Owner>(initialOwner)
   const [error, setError] = useState<{ kind: 'unsupported' | 'corrupt'; id: number } | null>(null)
   const [busy, setBusy] = useState(false)
   const [generating, setGenerating] = useState(false)
+
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })

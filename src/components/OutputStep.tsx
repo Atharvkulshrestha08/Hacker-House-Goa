@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { ensureFonts, renderOutput } from '../lib/renderer'
 import { downloadCanvas, shareToX, buildCaption, fileNameFor } from '../lib/share'
+import { storeShareImage } from '../lib/qr'
 import type { OutputType } from '../types'
 import type { DecodedImage } from '../lib/image'
 import type { DrawViewport } from '../lib/image'
@@ -45,15 +46,29 @@ export default function OutputStep({
     if (!frontCanvas) return
     const input = { name, stackLabel, builderClass, photo, photoWidth, photoHeight, viewport }
 
-    const draw = () => {
-      renderOutput(frontCanvas, type, input, 'front')
-      if (backCanvas && type === 'id') {
-        renderOutput(backCanvas, type, input, 'back')
+    // Build the share URL — the QR in the passport will encode this
+    const shareUrl = window.location.origin + window.location.pathname + '#share'
+
+    const draw = async () => {
+      // Render front (no QR yet — need canvas content first for storage)
+      await renderOutput(frontCanvas, type, input, 'front', '')
+      // Now store the image and get the proper share URL, then redraw with real QR
+      if (type === 'id') {
+        const qrUrl = storeShareImage(frontCanvas)
+        await renderOutput(frontCanvas, type, input, 'front', qrUrl)
+        if (backCanvas) {
+          await renderOutput(backCanvas, type, input, 'back', '')
+        }
+      } else {
+        // PFP has no QR
+        if (backCanvas) await renderOutput(backCanvas, type, input, 'back', '')
       }
+      void shareUrl // referenced above
     }
-    draw()
+    void draw()
     void ensureFonts().then(draw)
   }, [type, name, stackLabel, builderClass, photo, photoWidth, photoHeight, viewport])
+
 
   const handleDownload = async (side: 'front' | 'back' | 'both' = 'front') => {
     const frontCanvas = frontCanvasRef.current
@@ -114,7 +129,7 @@ export default function OutputStep({
       </div>
 
       {/* 3D Flip Card Container */}
-      <div className="relative mx-auto w-full max-w-4xl [perspective:1200px]">
+      <div className="relative mx-auto w-full max-w-5xl mt-8 [perspective:1200px]">
         <div className="absolute inset-0 translate-x-2.5 translate-y-2.5 rounded-3xl bg-sun" />
 
         <div
@@ -149,9 +164,9 @@ export default function OutputStep({
       </div>
 
       {/* Actions */}
-      <div className="mx-auto flex w-full max-w-[380px] flex-col gap-2.5">
+      <div className="mx-auto flex w-full max-w-[560px] flex-col gap-4">
         {type === 'id' ? (
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-6">
             <button type="button" onClick={() => handleDownload('front')} className="btn-primary py-3 text-xs">
               ⬇ Download Front
             </button>
