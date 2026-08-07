@@ -78,46 +78,30 @@ const near = (p, [r, g, b], tol) =>
 try {
   // ---------- Builder ID ----------
   const id = await analyze('builder-id.png', {
-    header: { kind: 'px', x: 675, y: 100 },
-    sunTop: { kind: 'px', x: 675, y: 241 },
-    sunRight: { kind: 'px', x: 1253, y: 600 },
-    photo: { kind: 'px', x: 675, y: 650 },
-    pill: { kind: 'px', x: 675, y: 1375 },
-    classBand: { kind: 'px', x: 675, y: 1530 },
-    nameInk: { kind: 'ink', y0: 1120, y1: 1330, x0: 400, x1: 950 },
-    classText: { kind: 'diff', y0: 1500, y1: 1545, x0: 350, x1: 1000, bg: [255, 61, 168], tol: 40 },
-    footerInk: { kind: 'ink', y0: 1620, y1: 1652, x0: 108, x1: 1242 },
-    gapInk: { kind: 'ink', y0: 1045, y1: 1075, x0: 400, x1: 950 },
-    pillText: { kind: 'diff', y0: 1340, y1: 1410, x0: 400, x1: 950, bg: [255, 210, 63], tol: 40 },
+    header: { kind: 'px', x: 675, y: 50 },
+    photo: { kind: 'px', x: 675, y: 500 },
+    nameInk: { kind: 'diff', y0: 930, y1: 1040, x0: 80, x1: 600, bg: [6, 26, 20], tol: 30 },
+    classBand: { kind: 'px', x: 200, y: 1100 },
+    classText: { kind: 'diff', y0: 1080, y1: 1130, x0: 100, x1: 800, bg: [6, 26, 20], tol: 30 },
+    footerInk: { kind: 'diff', y0: 1540, y1: 1610, x0: 80, x1: 600, bg: [6, 26, 20], tol: 20 },
   })
   ok('ID size', id.w === 1350 && id.h === 1688, `${id.w}×${id.h}`)
-  ok('Header band forest green', near(id.results.header.p, [10, 61, 46], 28), JSON.stringify(id.results.header.p))
-  ok('Sun accent above photo', near(id.results.sunTop.p, [255, 210, 63], 60), JSON.stringify(id.results.sunTop.p))
-  ok('Sun accent right of photo', near(id.results.sunRight.p, [255, 210, 63], 60), JSON.stringify(id.results.sunRight.p))
+  ok('Header background dark emerald', id.results.header.p[0] < 50 && id.results.header.p[1] < 70, JSON.stringify(id.results.header.p))
   ok('Photo occupies center', id.results.photo.p[0] !== id.results.photo.p[1], JSON.stringify(id.results.photo.p))
-  ok('Name ink present', id.results.nameInk.ink > 0.02, `ink ${(id.results.nameInk.ink * 100).toFixed(1)}%`)
-  ok('Stack pill sun yellow', near(id.results.pill.p, [255, 210, 63], 60), JSON.stringify(id.results.pill.p))
-  ok('Stack text on pill', id.results.pillText.ratio > 0.005, `diff ${(id.results.pillText.ratio * 100).toFixed(1)}%`)
-  ok('Class band punch pink', near(id.results.classBand.p, [255, 61, 168], 50), JSON.stringify(id.results.classBand.p))
-  ok('Class text visible on band', id.results.classText.ratio > 0.01, `diff ${(id.results.classText.ratio * 100).toFixed(1)}%`)
-  ok('Footer text present', id.results.footerInk.ink > 0.003, `ink ${(id.results.footerInk.ink * 100).toFixed(1)}%`)
-  ok('Name does not touch photo', id.results.gapInk.ink < 0.01, `ink ${(id.results.gapInk.ink * 100).toFixed(2)}%`)
+  ok('Name text visible', id.results.nameInk.ratio > 0.01, `diff ${(id.results.nameInk.ratio * 100).toFixed(1)}%`)
+  ok('AI Title class band present', id.results.classBand.p[0] > 100 || id.results.classText.ratio > 0.005, JSON.stringify(id.results.classBand.p))
+  ok('Footer details present', id.results.footerInk.ratio > 0.01, `diff ${(id.results.footerInk.ratio * 100).toFixed(1)}%`)
 
   // ---------- PFP ----------
   const pfp = await analyze('pfp-frame.png', {
-    corner: { kind: 'px', x: 30, y: 30 },
-    wordmark: { kind: 'ink', y0: 40, y1: 110, x0: 300, x1: 780 },
-    photo: { kind: 'px', x: 540, y: 600 },
-    bottom: { kind: 'diff', y0: 1046, y1: 1076, x0: 200, x1: 880, bg: [10, 61, 46], tol: 40 },
-    topBand: { kind: 'px', x: 540, y: 5 },
-    yellowLine: { kind: 'px', x: 540, y: 140 },
+    wordmark: { kind: 'diff', y0: 40, y1: 100, x0: 200, x1: 880, bg: [6, 26, 20], tol: 30 },
+    photo: { kind: 'px', x: 540, y: 500 },
+    bottom: { kind: 'diff', y0: 1015, y1: 1060, x0: 200, x1: 880, bg: [6, 26, 20], tol: 30 },
   })
   ok('PFP size', pfp.w === 1080 && pfp.h === 1080, `${pfp.w}×${pfp.h}`)
-  ok('PFP corner sun tick', near(pfp.results.corner.p, [255, 210, 63], 60), JSON.stringify(pfp.results.corner.p))
-  ok('PFP wordmark present', pfp.results.wordmark.ink > 0.005, `ink ${(pfp.results.wordmark.ink * 100).toFixed(1)}%`)
+  ok('PFP wordmark present', pfp.results.wordmark.ratio > 0.005, `diff ${(pfp.results.wordmark.ratio * 100).toFixed(1)}%`)
   ok('PFP photo dominant', pfp.results.photo.p[0] !== pfp.results.photo.p[1], JSON.stringify(pfp.results.photo.p))
-  ok('PFP bottom #FrameInGoa (sun on forest)', pfp.results.bottom.ratio > 0.005, `diff ${(pfp.results.bottom.ratio * 100).toFixed(1)}%`)
-  ok('PFP outer frame forest', near(pfp.results.topBand.p, [10, 61, 46], 28), JSON.stringify(pfp.results.topBand.p))
+  ok('PFP bottom #FrameInGoa present', pfp.results.bottom.ratio > 0.005, `diff ${(pfp.results.bottom.ratio * 100).toFixed(1)}%`)
 } catch (err) {
   ok('Analysis completed', false, String(err))
 } finally {

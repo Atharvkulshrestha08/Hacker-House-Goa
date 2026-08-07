@@ -90,41 +90,6 @@ function roundedRect(
   ctx.closePath()
 }
 
-function drawHeader(ctx: CanvasRenderingContext2D, w: number, h: number): void {
-  ctx.fillStyle = FOREST
-  ctx.fillRect(0, 0, w, h)
-  ctx.fillStyle = CREAM
-  ctx.font = `38px ${DISPLAY}`
-  ctx.textAlign = 'center'
-  ctx.textBaseline = 'alphabetic'
-  ctx.fillText('HACKER HOUSE', w / 2, 86)
-  ctx.fillStyle = BUTTER
-  ctx.font = `80px ${DISPLAY}`
-  ctx.fillText('गोवा 2026', w / 2, 176)
-}
-
-function renderName(
-  ctx: CanvasRenderingContext2D,
-  name: string,
-  cx: number,
-  maxWidth: number,
-  top: number,
-  lineGap: number,
-): void {
-  const lines = splitName(name)
-  ctx.textAlign = 'center'
-  ctx.textBaseline = 'alphabetic'
-  ctx.fillStyle = INK
-  const base = lines.length > 1 ? `92px ${DISPLAY}` : `104px ${DISPLAY}`
-  const fitted = fitText(ctx, lines[0], base, maxWidth)
-  ctx.font = fitted.font
-  ctx.fillText(lines[0], cx, top + fitted.size * 0.78)
-  if (lines[1]) {
-    ctx.font = fitted.font
-    ctx.fillText(lines[1], cx, top + fitted.size * 0.78 + lineGap)
-  }
-}
-
 export function renderId(canvas: HTMLCanvasElement, input: RenderInput): void {
   const { width: W, height: H } = OUTPUT_SIZES.id
   if (canvas.width !== W || canvas.height !== H) {
@@ -133,78 +98,215 @@ export function renderId(canvas: HTMLCanvasElement, input: RenderInput): void {
   }
   const ctx = canvas.getContext('2d')!
   ctx.clearRect(0, 0, W, H)
-  ctx.textBaseline = 'alphabetic'
 
-  // backdrop
-  ctx.fillStyle = CREAM
+  // 1. Dark Emerald Holographic Background with Grid Pattern
+  ctx.fillStyle = '#061a14'
   ctx.fillRect(0, 0, W, H)
 
-  // header band
-  drawHeader(ctx, W, 216)
-
-  // photo block with sun offset accent
-  const px = 108
-  const py = 252
-  const pw = W - px * 2
-  const ph = 790
-  ctx.fillStyle = SUN
-  roundedRect(ctx, px + 22, py - 22, pw, ph, 30)
-  ctx.fill()
-
-  if (input.photo) {
-    ctx.fillStyle = PUNCH
-    roundedRect(ctx, px, py, pw, ph, 30)
-    ctx.fill()
-    drawCoveredImage(ctx, input.photo, px, py, pw, ph, input.photoWidth, input.photoHeight, input.viewport)
-  } else {
-    ctx.fillStyle = PUNCH
-    roundedRect(ctx, px, py, pw, ph, 30)
-    ctx.fill()
-    ctx.fillStyle = CREAM
-    ctx.font = `46px ${DISPLAY}`
-    ctx.textAlign = 'center'
-    ctx.fillText('YOUR FACE GOES HERE', px + pw / 2, py + ph / 2)
+  // Grid background
+  ctx.strokeStyle = 'rgba(0, 230, 153, 0.06)'
+  ctx.lineWidth = 2
+  const gridSize = 40
+  for (let x = 0; x < W; x += gridSize) {
+    ctx.beginPath()
+    ctx.moveTo(x, 0)
+    ctx.lineTo(x, H)
+    ctx.stroke()
+  }
+  for (let y = 0; y < H; y += gridSize) {
+    ctx.beginPath()
+    ctx.moveTo(0, y)
+    ctx.lineTo(W, y)
+    ctx.stroke()
   }
 
-  // name
-  renderName(ctx, input.name, W / 2, W - px * 2, 1090, 110)
+  // Glowing gradient orbs in background
+  const grad1 = ctx.createRadialGradient(W * 0.2, H * 0.15, 50, W * 0.2, H * 0.15, 500)
+  grad1.addColorStop(0, 'rgba(0, 230, 153, 0.22)')
+  grad1.addColorStop(1, 'transparent')
+  ctx.fillStyle = grad1
+  ctx.fillRect(0, 0, W, H)
 
-  // stack pill
-  const stackLabel = input.stackLabel || 'BUILDER'
-  ctx.font = `34px ${DISPLAY}`
-  const sw = Math.min(ctx.measureText(stackLabel).width + 96, W - 260)
-  const sh = 70
-  const sx = W / 2 - sw / 2
-  const sy = 1340
-  ctx.fillStyle = SUN
-  roundedRect(ctx, sx, sy, sw, sh, sh / 2)
-  ctx.fill()
-  ctx.fillStyle = INK
-  ctx.textAlign = 'center'
-  ctx.fillText(stackLabel, W / 2, sy + sh / 2 + 12)
+  const grad2 = ctx.createRadialGradient(W * 0.8, H * 0.85, 50, W * 0.8, H * 0.85, 600)
+  grad2.addColorStop(0, 'rgba(255, 61, 168, 0.25)')
+  grad2.addColorStop(1, 'transparent')
+  ctx.fillStyle = grad2
+  ctx.fillRect(0, 0, W, H)
 
-  // class band
-  const cy = 1440
-  const ch = 116
-  ctx.fillStyle = PUNCH
-  roundedRect(ctx, px, cy, pw, ch, 26)
+  // 2. Top Header - Passport Top Bar
+  ctx.textAlign = 'left'
+  ctx.textBaseline = 'middle'
+  ctx.fillStyle = '#ffd23f'
+  ctx.font = `700 24px ${BODY}`
+  ctx.fillText('OFFICIAL COLLECTIBLE', 80, 70)
+
+  const passId = `PASSPORT #HHG-2026-${(Math.floor(Math.sin(input.name.length || 1) * 8999) + 1000).toString().padStart(4, '0')}`
+  ctx.textAlign = 'right'
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.5)'
+  ctx.font = `600 22px ${BODY}`
+  ctx.fillText(passId, W - 80, 70)
+
+  // Title block
+  ctx.textAlign = 'left'
+  ctx.fillStyle = '#ffffff'
+  ctx.font = `900 68px ${DISPLAY}`
+  ctx.fillText('HACKER HOUSE', 80, 140)
+
+  // Neon Goa badge tag
+  ctx.fillStyle = '#ff3da8'
+  roundedRect(ctx, 580, 108, 120, 48, 24)
   ctx.fill()
-  ctx.fillStyle = BUTTER
+  ctx.fillStyle = '#ffffff'
   ctx.font = `700 24px ${BODY}`
   ctx.textAlign = 'center'
-  ctx.fillText('BUILDER CLASS', W / 2, cy + 48)
-  ctx.fillStyle = CREAM
-  ctx.font = `52px ${DISPLAY}`
-  ctx.fillText(input.builderClass, W / 2, cy + 92)
+  ctx.fillText('गोवा', 640, 132)
 
-  // footer
-  ctx.textBaseline = 'alphabetic'
-  ctx.fillStyle = INK
-  ctx.font = `34px ${DISPLAY}`
+  // Verified Holographic Badge
+  ctx.strokeStyle = '#00e699'
+  ctx.lineWidth = 3
+  roundedRect(ctx, W - 180, 102, 100, 100, 50)
+  ctx.stroke()
+  ctx.fillStyle = 'rgba(0, 230, 153, 0.15)'
+  ctx.fill()
+  ctx.fillStyle = '#00e699'
+  ctx.font = `32px ${BODY}`
+  ctx.textAlign = 'center'
+  ctx.fillText('✓', W - 130, 138)
+  ctx.font = `700 14px ${BODY}`
+  ctx.fillText('VERIFIED', W - 130, 172)
+
+  // 3. Central Photo Frame with Neon Glow & Glass Border
+  const px = 180
+  const py = 220
+  const pw = W - px * 2 // 990 width
+  const ph = 640
+
+  // Photo Outer Glow
+  ctx.shadowColor = '#00e699'
+  ctx.shadowBlur = 30
+  ctx.strokeStyle = '#00e699'
+  ctx.lineWidth = 6
+  roundedRect(ctx, px, py, pw, ph, 32)
+  ctx.stroke()
+  ctx.shadowBlur = 0 // reset shadow
+
+  if (input.photo) {
+    drawCoveredImage(ctx, input.photo, px, py, pw, ph, input.photoWidth, input.photoHeight, input.viewport)
+  } else {
+    ctx.fillStyle = '#0d2d24'
+    roundedRect(ctx, px, py, pw, ph, 32)
+    ctx.fill()
+    ctx.fillStyle = '#00e699'
+    ctx.font = `40px ${DISPLAY}`
+    ctx.textAlign = 'center'
+    ctx.fillText('YOUR FACE GOES HERE', W / 2, py + ph / 2)
+  }
+
+  // Active status badge on photo
+  ctx.fillStyle = 'rgba(6, 26, 20, 0.85)'
+  roundedRect(ctx, px + 30, py + 30, 150, 42, 21)
+  ctx.fill()
+  ctx.fillStyle = '#00e699'
+  ctx.beginPath()
+  ctx.arc(px + 52, py + 51, 8, 0, Math.PI * 2)
+  ctx.fill()
+  ctx.font = `700 18px ${BODY}`
   ctx.textAlign = 'left'
-  ctx.fillText('#FrameInGoa', px, H - 38)
-  ctx.textAlign = 'right'
-  ctx.fillText('HHGOA.COM', W - px, H - 38)
+  ctx.fillText('ACTIVE', px + 68, py + 51)
+
+  // 4. Builder Identifier & Name Section
+  const infoTop = py + ph + 50
+  ctx.textAlign = 'left'
+  ctx.fillStyle = '#ffd23f'
+  ctx.font = `700 22px ${BODY}`
+  ctx.fillText('BUILDER IDENTIFIER', 80, infoTop)
+
+  // Name (Large Bold White)
+  const lines = splitName(input.name)
+  ctx.fillStyle = '#ffffff'
+  const fitted = fitText(ctx, lines[0], `72px ${DISPLAY}`, W - 160)
+  ctx.font = fitted.font
+  ctx.fillText(lines[0], 80, infoTop + 55)
+  if (lines[1]) {
+    const fitted2 = fitText(ctx, lines[1], `72px ${DISPLAY}`, W - 160)
+    ctx.font = fitted2.font
+    ctx.fillText(lines[1], 80, infoTop + 120)
+  }
+
+  const nameOffset = lines.length > 1 ? 120 : 55
+
+  // 5. AI Title / Builder Class Tag
+  const classY = infoTop + nameOffset + 45
+  ctx.fillStyle = '#ff3da8'
+  ctx.font = `700 20px ${BODY}`
+  ctx.fillText('✨ AI TITLE', 80, classY)
+
+  ctx.fillStyle = 'rgba(255, 61, 168, 0.12)'
+  ctx.strokeStyle = '#ff3da8'
+  ctx.lineWidth = 2
+  roundedRect(ctx, 80, classY + 15, W - 160, 70, 16)
+  ctx.fill()
+  ctx.stroke()
+
+  ctx.fillStyle = '#ff3da8'
+  ctx.font = `900 38px ${DISPLAY}`
+  ctx.fillText(`"${input.builderClass}"`, 110, classY + 60)
+
+  // 6. Primary Stack Tag & Meta Info
+  const stackY = classY + 115
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.6)'
+  ctx.font = `700 18px ${BODY}`
+  ctx.fillText('PRIMARY STACK', 80, stackY)
+
+  const stackLabel = input.stackLabel || 'BUILDER'
+  ctx.font = `700 22px ${BODY}`
+  const stw = ctx.measureText(stackLabel).width + 48
+  ctx.fillStyle = 'rgba(0, 230, 153, 0.15)'
+  ctx.strokeStyle = '#00e699'
+  ctx.lineWidth = 2
+  roundedRect(ctx, 80, stackY + 12, stw, 48, 24)
+  ctx.fill()
+  ctx.stroke()
+  ctx.fillStyle = '#00e699'
+  ctx.fillText(stackLabel, 104, stackY + 42)
+
+  // 7. Stamp & Barcode Footer
+  const footerY = H - 120
+
+  // Officially Approved Holographic Stamp
+  ctx.save()
+  ctx.translate(W - 240, footerY - 40)
+  ctx.rotate(-0.12)
+  ctx.strokeStyle = '#ff3da8'
+  ctx.lineWidth = 4
+  roundedRect(ctx, 0, 0, 220, 80, 14)
+  ctx.stroke()
+  ctx.fillStyle = 'rgba(255, 61, 168, 0.12)'
+  ctx.fill()
+  ctx.fillStyle = '#ff3da8'
+  ctx.font = `900 24px ${DISPLAY}`
+  ctx.textAlign = 'center'
+  ctx.fillText('GOA 2026', 110, 32)
+  ctx.font = `700 16px ${BODY}`
+  ctx.fillText('OFFICIALLY APPROVED', 110, 58)
+  ctx.restore()
+
+  // Location & Date
+  ctx.textAlign = 'left'
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.8)'
+  ctx.font = `600 24px ${BODY}`
+  ctx.fillText('📍 GOA, INDIA    📅 MARCH 2026', 80, footerY)
+
+  // Barcode graphics line
+  ctx.fillStyle = '#ffffff'
+  for (let i = 0; i < 65; i++) {
+    const bw = (i % 3 === 0 ? 6 : i % 2 === 0 ? 3 : 2)
+    const bx = 80 + i * 8
+    ctx.fillRect(bx, footerY + 25, bw, 35)
+  }
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.4)'
+  ctx.font = `14px monospace`
+  ctx.fillText('#FrameInGoa · HHG-BOARDING-PASS-2026-VERIFIED', 80, footerY + 78)
 }
 
 export function renderPfp(canvas: HTMLCanvasElement, input: RenderInput): void {
@@ -215,16 +317,19 @@ export function renderPfp(canvas: HTMLCanvasElement, input: RenderInput): void {
   }
   const ctx = canvas.getContext('2d')!
   ctx.clearRect(0, 0, S, SH)
-  ctx.textBaseline = 'alphabetic'
 
-  // background fill under everything
-  ctx.fillStyle = FOREST
+  // Dark Emerald Holographic Background
+  ctx.fillStyle = '#061a14'
   ctx.fillRect(0, 0, S, SH)
 
-  const topBand = 150
-  const border = 36
+  // Outer Neon Pink Border
+  ctx.strokeStyle = '#ff3da8'
+  ctx.lineWidth = 12
+  ctx.strokeRect(6, 6, S - 12, SH - 12)
 
-  // photo area
+  // Photo Center Area
+  const border = 40
+  const topBand = 130
   if (input.photo) {
     drawCoveredImage(
       ctx,
@@ -232,49 +337,44 @@ export function renderPfp(canvas: HTMLCanvasElement, input: RenderInput): void {
       border,
       topBand,
       S - border * 2,
-      SH - topBand - border,
+      SH - topBand - border * 2,
       input.photoWidth,
       input.photoHeight,
       input.viewport,
     )
   } else {
-    ctx.fillStyle = PUNCH
-    ctx.fillRect(border, topBand, S - border * 2, SH - topBand - border)
-    ctx.fillStyle = CREAM
-    ctx.font = `40px ${DISPLAY}`
-    ctx.textAlign = 'center'
-    ctx.fillText('YOUR FACE GOES HERE', S / 2, topBand + (SH - topBand - border) / 2)
+    ctx.fillStyle = '#0d2d24'
+    ctx.fillRect(border, topBand, S - border * 2, SH - topBand - border * 2)
   }
 
-  // inner yellow line
-  ctx.strokeStyle = SUN
+  // Inner Neon Emerald Border
+  ctx.strokeStyle = '#00e699'
   ctx.lineWidth = 6
-  ctx.strokeRect(border - 12, topBand - 12, S - (border - 12) * 2, SH - (border - 12) * 2)
+  ctx.strokeRect(border, topBand, S - border * 2, SH - topBand - border * 2)
 
-  // corner ticks
-  ctx.fillStyle = PUNCH
-  ctx.fillRect(0, 0, 90, 90)
-  ctx.fillRect(S - 90, 0, 90, 90)
-  ctx.fillStyle = SUN
-  ctx.fillRect(0, 0, 64, 64)
-  ctx.fillRect(S - 64, 0, 64, 64)
+  // Top Title Bar
+  ctx.fillStyle = '#061a14'
+  ctx.fillRect(40, 20, S - 80, 95)
 
-  // top wordmark
-  ctx.fillStyle = CREAM
-  ctx.font = `40px ${DISPLAY}`
+  ctx.fillStyle = '#ffffff'
+  ctx.font = `900 44px ${DISPLAY}`
   ctx.textAlign = 'center'
-  ctx.fillText('HACKER HOUSE', S / 2, 78)
-  ctx.fillStyle = BUTTER
-  ctx.font = `68px ${DISPLAY}`
-  ctx.fillText('गोवा 2026', S / 2, 138)
+  ctx.fillText('HACKER HOUSE GOA 2026', S / 2, 65)
 
-  // bottom bar
-  ctx.fillStyle = FOREST
-  ctx.fillRect(0, SH - border, S, border)
-  ctx.fillStyle = SUN
-  ctx.font = `30px ${DISPLAY}`
-  ctx.textAlign = 'center'
-  ctx.fillText('#FrameInGoa', S / 2, SH - 10)
+  ctx.fillStyle = '#ffd23f'
+  ctx.font = `700 24px ${BODY}`
+  ctx.fillText(`OFFICIAL BUILDER · ${input.builderClass.toUpperCase()}`, S / 2, 100)
+
+  // Bottom Tag
+  ctx.fillStyle = '#061a14'
+  ctx.fillRect(60, SH - 70, S - 120, 50)
+  ctx.strokeStyle = '#ff3da8'
+  ctx.lineWidth = 3
+  ctx.strokeRect(60, SH - 70, S - 120, 50)
+
+  ctx.fillStyle = '#ff3da8'
+  ctx.font = `900 28px ${DISPLAY}`
+  ctx.fillText('#FrameInGoa', S / 2, SH - 36)
 }
 
 export function renderOutput(

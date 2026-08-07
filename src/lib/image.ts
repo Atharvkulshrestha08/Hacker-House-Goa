@@ -2,8 +2,38 @@ import type { ProcessedPhoto } from '../types'
 
 export type { ProcessedPhoto } from '../types'
 
-const SUPPORTED = new Set(['image/jpeg', 'image/png', 'image/heic', 'image/heif'])
-const HEIC_MIME = new Set(['image/heic', 'image/heif'])
+const SUPPORTED_MIMES = new Set([
+  'image/jpeg', 'image/jpg', 'image/pjpeg', 'image/jfif', 'image/pjp',
+  'image/png', 'image/apng',
+  'image/gif',
+  'image/webp',
+  'image/avif',
+  'image/svg+xml',
+  'image/x-icon', 'image/vnd.microsoft.icon',
+  'image/bmp', 'image/x-bmp',
+  'image/tiff', 'image/tif',
+  'image/heic', 'image/heif', 'image/heic-sequence', 'image/heif-sequence',
+  'image/adobe.photoshop', 'image/vnd.adobe.photoshop', 'application/postscript', 'application/pdf'
+])
+
+const SUPPORTED_EXTS = new Set([
+  // standard web & photos
+  'jpg', 'jpeg', 'jpe', 'jif', 'jfif', 'pjpeg', 'pjp',
+  'png', 'apng',
+  'gif',
+  'webp',
+  'avif',
+  'svg',
+  'ico', 'cur',
+  'bmp', 'tif', 'tiff',
+  'heic', 'heif',
+  // design / raw / vector
+  'ai', 'eps', 'pdf',
+  'psd', 'indd',
+  'raw', 'cr2', 'nef', 'arw', 'dng', 'orf', 'rw2', 'pef', 'srw'
+])
+
+const HEIC_MIME = new Set(['image/heic', 'image/heif', 'image/heic-sequence', 'image/heif-sequence'])
 const MAX_DIMENSION = 2200
 
 export type DecodedImage = HTMLImageElement | ImageBitmap
@@ -17,26 +47,7 @@ export class PhotoError extends Error {
   }
 }
 
-async function fileToBlob(file: File): Promise<Blob> {
-  if (HEIC_MIME.has(file.type)) {
-    try {
-      const { default: heic2any } = await import('heic2any')
-      const converted = await heic2any({
-        blob: file,
-        toType: 'image/jpeg',
-        quality: 0.9,
-      })
-      const blob = Array.isArray(converted) ? converted[0] : converted
-      if (!blob || !(blob instanceof Blob)) throw new Error('no output')
-      return blob
-    } catch (err) {
-      throw new PhotoError('corrupt', `HEIC conversion failed: ${err}`)
-    }
-  }
-  return file
-}
-
-function loadFromUrl(url: string): Promise<HTMLImageElement> {
+async function loadFromUrl(url: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image()
     img.onload = () => resolve(img)
@@ -49,14 +60,37 @@ function loadFromUrl(url: string): Promise<HTMLImageElement> {
 }
 
 export async function loadSourceImage(blob: Blob): Promise<DecodedImage> {
+  // 1. Try createImageBitmap with orientation
   if (typeof createImageBitmap === 'function') {
     try {
       return await createImageBitmap(blob, { imageOrientation: 'from-image' })
     } catch {
-      // fall through to <img> which also respects EXIF in modern browsers
+      try {
+        return await createImageBitmap(blob)
+      } catch {
+        // continue to <img> fallback
+      }
     }
   }
-  return loadFromUrl(URL.createObjectURL(blob))
+
+  // 2. Try URL.createObjectURL
+  const objectUrl = URL.createObjectURL(blob)
+  try {
+    return await loadFromUrl(objectUrl)
+  } catch {
+    // 3. Fallback to Data URL via FileReader for strict browser security/HEIC blobs
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => {
+        const img = new Image()
+        img.onload = () => resolve(img)
+        img.onerror = () => reject(new PhotoError('corrupt', 'Could not decode image format'))
+        img.src = reader.result as string
+      }
+      reader.onerror = () => reject(new PhotoError('corrupt', 'Could not read file data'))
+      reader.readAsDataURL(blob)
+    })
+  }
 }
 
 export function getDecodedSize(source: DecodedImage): { w: number; h: number } {
@@ -94,13 +128,32 @@ async function downscale(
 export async function processPhoto(
   file: File,
 ): Promise<{ processed: ProcessedPhoto; image: DecodedImage }> {
-  if (!SUPPORTED.has(file.type)) {
-    throw new PhotoError('unsupported', `${file.type || 'unknown'} is not supported`)
+  const ext = file.name.split('.').pop()?.toLowerCase() || ''
+  const isMimeSupported = file.type ? SUPPORTED_MIMES.has(file.type) : false
+  const isExtSupported = ext ? SUPPORTED_EXTS.has(ext) : false
+  const isHeicExt = ext === 'heic' || ext === 'heif'
+
+  if (!isMimeSupported && !isExtSupported) {
+    throw new PhotoError('unsupported', `${file.name} is not supported`)
   }
 
   let blob: Blob
   try {
-    blob = await fileToBlob(file)
+    if (HEIC_MIME.has(file.type) || isHeicExt) {
+      try {
+        const { default: heic2any } = await import('heic2any')
+        const converted = await heic2any({
+          blob: file,
+          toType: 'image/jpeg',
+          quality: 0.9,
+        })
+        blob = Array.isArray(converted) ? converted[0] : converted
+      } catch {
+        blob = file
+      }
+    } else {
+      blob = file
+    }
   } catch (err) {
     throw err instanceof PhotoError ? err : new PhotoError('corrupt', 'Failed to read photo')
   }

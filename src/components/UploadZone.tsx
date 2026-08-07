@@ -44,7 +44,7 @@ export default function UploadZone({ onPhoto, onError, onBusy, accent = false }:
       <input
         ref={inputRef}
         type="file"
-        accept="image/jpeg,image/png,image/heic,image/heif,.jpg,.jpeg,.png,.heic,.heif"
+        accept="image/*,.jpg,.jpeg,.jpe,.jif,.jfif,.pjpeg,.pjp,.png,.apng,.gif,.webp,.avif,.svg,.ico,.cur,.bmp,.tif,.tiff,.heic,.heif,.ai,.eps,.pdf,.psd,.indd,.raw,.cr2,.nef,.arw,.dng,.orf,.rw2,.pef,.srw"
         className="sr-only"
         onChange={(e) => void handleFile(e.target.files?.[0])}
       />
