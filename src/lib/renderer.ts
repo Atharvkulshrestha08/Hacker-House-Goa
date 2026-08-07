@@ -456,7 +456,7 @@ export async function renderId(canvas: HTMLCanvasElement, input: RenderInput, qr
   // ═══════════════════════════════════════════════════════════════════════════
 
   // Divider — spans full right page width
-  const GRID_TOP = PHOTO_Y + PHOTO_H + 78   // ~723px — below photo
+  const GRID_TOP = 740   // fixed y — gives consistent position regardless of name length
   ctx.strokeStyle = 'rgba(14, 30, 24, 0.12)'
   ctx.lineWidth = 1.5
   ctx.beginPath()
@@ -471,11 +471,11 @@ export async function renderId(canvas: HTMLCanvasElement, input: RenderInput, qr
   // 6 metadata fields in a 3-column × 2-row grid
   // The QR code occupies position [1][2] (row 1, col 2 — the "MISSION" spot on the right)
   // so we only render 5 regular items + 1 QR
-  const META_LABEL_SIZE = 16   // px for label text
-  const META_VAL_SIZE   = 28   // px for value text  (Anton)
+  const META_LABEL_SIZE = 20   // px for label text
+  const META_VAL_SIZE   = 36   // px for value text  (Anton)
   const COL_W = (halfW - PAD * 2) / 3   // ~360px per column
-  const ROW_H = 126
-  const GRID_PAD_Y = 44
+  const ROW_H = 140
+  const GRID_PAD_Y = 48
 
   const metaItems = [
     { label: 'BUILDER ID',   val: `HHG26-${idNum}`,          accent: false },
@@ -570,7 +570,7 @@ export async function renderId(canvas: HTMLCanvasElement, input: RenderInput, qr
   //  FOOTER  — barcode  |  gold seal  |  signature
   // ═══════════════════════════════════════════════════════════════════════════
 
-  const FOOTER_Y = H - 220  // ~1380
+  const FOOTER_Y = H - 300  // ~1300 — moved up to close the gap
 
   // Thin line above footer
   ctx.strokeStyle = 'rgba(14, 30, 24, 0.10)'

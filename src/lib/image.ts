@@ -192,7 +192,7 @@ export function computeCover(
   srcH: number,
   dstW: number,
   dstH: number,
-  biasY = 0.45,
+  biasY = 0.25,   // 0 = top, 0.5 = centre — 0.25 keeps faces in frame
 ): CoverResult {
   const scale = Math.max(dstW / srcW, dstH / srcH)
   const scaledW = srcW * scale

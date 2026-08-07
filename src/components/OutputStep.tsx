@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react'
 import { ensureFonts, renderOutput } from '../lib/renderer'
 import { downloadCanvas, shareToX, buildCaption, fileNameFor } from '../lib/share'
 import { storeShareImage } from '../lib/qr'
-import type { OutputType } from '../types'
 import type { DecodedImage } from '../lib/image'
 import type { DrawViewport } from '../lib/image'
 
@@ -29,173 +28,137 @@ export default function OutputStep({
   onEditPhoto,
   onStartOver,
 }: OutputStepProps) {
-  const frontCanvasRef = useRef<HTMLCanvasElement>(null)
-  const backCanvasRef = useRef<HTMLCanvasElement>(null)
-  const [type, setType] = useState<OutputType>('id')
-  const [flipped, setFlipped] = useState(false)
+  const passportCanvasRef = useRef<HTMLCanvasElement>(null)
+  const pfpCanvasRef      = useRef<HTMLCanvasElement>(null)
   const [notice, setNotice] = useState<string | null>(null)
 
   const showNotice = (msg: string) => {
     setNotice(msg)
-    window.setTimeout(() => setNotice(null), 4000)
+    window.setTimeout(() => setNotice(null), 3500)
   }
 
+  // Render both canvases whenever inputs change
   useEffect(() => {
-    const frontCanvas = frontCanvasRef.current
-    const backCanvas = backCanvasRef.current
-    if (!frontCanvas) return
-    const input = { name, stackLabel, builderClass, photo, photoWidth, photoHeight, viewport }
+    const passportCanvas = passportCanvasRef.current
+    const pfpCanvas      = pfpCanvasRef.current
+    if (!passportCanvas) return
 
-    // Build the share URL — the QR in the passport will encode this
-    const shareUrl = window.location.origin + window.location.pathname + '#share'
+    const input = { name, stackLabel, builderClass, photo, photoWidth, photoHeight, viewport }
+    const qrBase = window.location.origin + window.location.pathname + '#share'
 
     const draw = async () => {
-      // Render front (no QR yet — need canvas content first for storage)
-      await renderOutput(frontCanvas, type, input, 'front', '')
-      // Now store the image and get the proper share URL, then redraw with real QR
-      if (type === 'id') {
-        const qrUrl = storeShareImage(frontCanvas)
-        await renderOutput(frontCanvas, type, input, 'front', qrUrl)
-        if (backCanvas) {
-          await renderOutput(backCanvas, type, input, 'back', '')
-        }
-      } else {
-        // PFP has no QR
-        if (backCanvas) await renderOutput(backCanvas, type, input, 'back', '')
+      // 1. Render passport (id, 2400×1600) — first pass to generate share image
+      await renderOutput(passportCanvas, 'id', input, 'front', '')
+      // 2. Store snapshot → get QR URL → redraw with QR embedded
+      const qrUrl = storeShareImage(passportCanvas)
+      await renderOutput(passportCanvas, 'id', input, 'front', qrUrl)
+      // 3. Render PFP (1080×1080)
+      if (pfpCanvas) {
+        await renderOutput(pfpCanvas, 'pfp', input, 'front', '')
       }
-      void shareUrl // referenced above
+      void qrBase
     }
+
     void draw()
     void ensureFonts().then(draw)
-  }, [type, name, stackLabel, builderClass, photo, photoWidth, photoHeight, viewport])
+  }, [name, stackLabel, builderClass, photo, photoWidth, photoHeight, viewport])
 
-
-  const handleDownload = async (side: 'front' | 'back' | 'both' = 'front') => {
-    const frontCanvas = frontCanvasRef.current
-    const backCanvas = backCanvasRef.current
-
-    if (side === 'both' && frontCanvas && backCanvas && type === 'id') {
-      await downloadCanvas(frontCanvas, fileNameFor(name, 'id-front'))
-      await downloadCanvas(backCanvas, fileNameFor(name, 'id-back'))
-      showNotice('DOWNLOADED BOTH SIDES (FRONT & BACK).')
-      return
-    }
-
-    const canvas = (side === 'back' && backCanvas) ? backCanvas : frontCanvas
+  const handleDownloadPassport = async () => {
+    const canvas = passportCanvasRef.current
     if (!canvas) return
-    const suffix = side === 'back' ? 'id-back' : type
-    await downloadCanvas(canvas, fileNameFor(name, suffix))
-    showNotice(`YOUR ${type.toUpperCase()} (${side.toUpperCase()}) IS READY.`)
+    await downloadCanvas(canvas, fileNameFor(name, 'passport'))
+    showNotice('PASSPORT DOWNLOADED ✓')
+  }
+
+  const handleDownloadPfp = async () => {
+    const canvas = pfpCanvasRef.current
+    if (!canvas) return
+    await downloadCanvas(canvas, fileNameFor(name, 'pfp'))
+    showNotice('PFP DOWNLOADED ✓')
   }
 
   const handleShare = async () => {
-    const canvas = flipped && backCanvasRef.current ? backCanvasRef.current : frontCanvasRef.current
+    const canvas = passportCanvasRef.current
     if (!canvas) return
     const caption = buildCaption(builderClass, name)
     const result = await shareToX(caption, canvas)
-    if (!result.usedWebShare) showNotice('OPENS X WITH YOUR CAPTION READY.')
+    if (!result.usedWebShare) showNotice('X OPENED WITH CAPTION READY.')
   }
 
   return (
-    <div className="space-y-5">
-      {/* output toggle */}
-      <div className="mx-auto grid w-full max-w-xs grid-cols-2 gap-2 rounded-full border-2 border-forest bg-cream p-1.5">
-        <button
-          type="button"
-          onClick={() => {
-            setType('id')
-            setFlipped(false)
-          }}
-          aria-pressed={type === 'id'}
-          className={`min-h-11 rounded-full px-4 py-2.5 font-display text-sm uppercase tracking-wide transition-all ${
-            type === 'id' ? 'bg-forest text-cream' : 'text-ink hover:text-punch'
-          }`}
-        >
-          Builder ID
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            setType('pfp')
-            setFlipped(false)
-          }}
-          aria-pressed={type === 'pfp'}
-          className={`min-h-11 rounded-full px-4 py-2.5 font-display text-sm uppercase tracking-wide transition-all ${
-            type === 'pfp' ? 'bg-punch text-cream' : 'text-ink hover:text-punch'
-          }`}
-        >
-          PFP Frame
-        </button>
-      </div>
+    <div className="space-y-6">
 
-      {/* 3D Flip Card Container */}
-      <div className="relative mx-auto w-full max-w-5xl mt-8 [perspective:1200px]">
-        <div className="absolute inset-0 translate-x-2.5 translate-y-2.5 rounded-3xl bg-sun" />
-
-        <div
-          role="button"
-          tabIndex={0}
-          onClick={() => type === 'id' && setFlipped(!flipped)}
-          onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && type === 'id' && setFlipped(!flipped)}
-          className={`relative cursor-pointer overflow-hidden rounded-3xl border-4 border-forest shadow-2xl transition-transform duration-700 [transform-style:preserve-3d] ${
-            flipped ? '[transform:rotateY(180deg)]' : ''
-          }`}
-          style={{ aspectRatio: type === 'id' ? '3 / 2' : '1 / 1' }}
-          title={type === 'id' ? 'Click card to flip front/back' : undefined}
-        >
-          {/* Front Side */}
-          <div className="absolute inset-0 [backface-visibility:hidden]">
-            <canvas ref={frontCanvasRef} className="block w-full h-full" />
+      {/* ── Passport (2400×1600) ─────────────────────────────────── */}
+      <section className="mx-auto w-full max-w-5xl">
+        <p className="mb-2 text-center text-[11px] font-bold uppercase tracking-widest text-ink/50">
+          Builder Passport · 2400 × 1600
+        </p>
+        {/* Shadow offset frame */}
+        <div className="relative">
+          <div className="absolute inset-0 translate-x-2.5 translate-y-2.5 rounded-3xl bg-sun" />
+          <div className="relative overflow-hidden rounded-3xl border-4 border-forest shadow-2xl">
+            <canvas
+              ref={passportCanvasRef}
+              className="block w-full"
+              style={{ aspectRatio: '3 / 2' }}
+            />
           </div>
+        </div>
+      </section>
 
-          {/* Back Side */}
-          {type === 'id' && (
-            <div className="absolute inset-0 [backface-visibility:hidden] [transform:rotateY(180deg)]">
-              <canvas ref={backCanvasRef} className="block w-full h-full" />
-            </div>
-          )}
+      {/* ── PFP (1080×1080) ─────────────────────────────────────── */}
+      <section className="mx-auto w-full max-w-sm">
+        <p className="mb-2 text-center text-[11px] font-bold uppercase tracking-widest text-ink/50">
+          PFP Frame · 1080 × 1080
+        </p>
+        <div className="relative">
+          <div className="absolute inset-0 translate-x-2 translate-y-2 rounded-2xl bg-sun" />
+          <div className="relative overflow-hidden rounded-2xl border-4 border-forest shadow-xl">
+            <canvas
+              ref={pfpCanvasRef}
+              className="block w-full"
+              style={{ aspectRatio: '1 / 1' }}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* ── Download + Share actions ─────────────────────────────── */}
+      <div className="mx-auto flex w-full max-w-[560px] flex-col gap-3">
+        <div className="grid grid-cols-2 gap-4">
+          <button
+            type="button"
+            onClick={handleDownloadPassport}
+            className="btn-primary py-3 text-sm"
+          >
+            ⬇ Download Passport
+          </button>
+          <button
+            type="button"
+            onClick={handleDownloadPfp}
+            className="btn-punch py-3 text-sm"
+          >
+            ⬇ Download PFP
+          </button>
         </div>
 
-        {type === 'id' && (
-          <p className="mt-3 text-center text-xs font-bold uppercase tracking-widest text-punch animate-pulse">
-            🔄 Click or Tap Card to Flip ({flipped ? 'BACK SIDE' : 'FRONT SIDE'})
-          </p>
-        )}
-      </div>
-
-      {/* Actions */}
-      <div className="mx-auto flex w-full max-w-[560px] flex-col gap-4">
-        {type === 'id' ? (
-          <div className="grid grid-cols-2 gap-6">
-            <button type="button" onClick={() => handleDownload('front')} className="btn-primary py-3 text-xs">
-              ⬇ Download Front
-            </button>
-            <button type="button" onClick={() => handleDownload('back')} className="btn-ghost py-3 text-xs">
-              🔄 Download Back
-            </button>
-            <button type="button" onClick={() => handleDownload('both')} className="btn-punch col-span-2 py-3 text-sm">
-              ✨ Download Both Sides (Zip/Files)
-            </button>
-          </div>
-        ) : (
-          <button type="button" onClick={() => handleDownload('front')} className="btn-primary w-full">
-            ⬇ Download PFP Frame
-          </button>
-        )}
-
         <button type="button" onClick={handleShare} className="btn-ghost w-full">
-          ✕ Share Active Side to X
+          𝕏 Share to X / Twitter
         </button>
       </div>
 
+      {/* Notice toast */}
       {notice && (
-        <p role="status" className="animate-pop mx-auto max-w-[380px] rounded-2xl bg-sun px-4 py-3 text-center font-display text-sm uppercase text-ink">
+        <p
+          role="status"
+          className="animate-pop mx-auto max-w-[380px] rounded-2xl bg-sun px-4 py-3 text-center font-display text-sm uppercase text-ink"
+        >
           {notice}
         </p>
       )}
 
-      <p className="text-center text-[11px] font-semibold uppercase tracking-widest text-ink/45">
-        Your photo stays on your device
+      <p className="text-center text-[11px] font-semibold uppercase tracking-widest text-ink/40">
+        Your photo stays on your device · never uploaded
       </p>
 
       <div className="mx-auto flex max-w-[380px] flex-col gap-2 text-center text-xs text-ink/60 sm:flex-row sm:justify-center">
@@ -207,6 +170,7 @@ export default function OutputStep({
           Start over
         </button>
       </div>
+
     </div>
   )
 }
