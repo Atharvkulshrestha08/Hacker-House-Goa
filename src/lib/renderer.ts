@@ -694,9 +694,8 @@ export async function renderId(canvas: HTMLCanvasElement, input: RenderInput, qr
   roundedRect(ctx, QR_X - 8, QR_Y - 8, QR_SIZE + 16, QR_SIZE + 16, 16)
   ctx.stroke()
 
-  if (qrUrl) {
-    await drawQR(ctx, qrUrl, QR_X, QR_Y, QR_SIZE)
-  }
+  await drawQR(ctx, qrUrl, QR_X, QR_Y, QR_SIZE)
+
 
   // Official Signature & Authorization
   const SIG_X = W - PAD - 100

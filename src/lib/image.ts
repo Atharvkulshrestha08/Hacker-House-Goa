@@ -224,20 +224,17 @@ export function drawCoveredImage(
   ctx.rect(dstX, dstY, dstW, dstH)
   ctx.clip()
 
-  const base = computeCover(srcW, srcH, dstW, dstH)
-  const scale = base.scale * viewport.scale
+  // Base cover scale guarantees image fills dstW × dstH completely
+  const base = computeCover(srcW, srcH, dstW, dstH, 0.20) // 0.20 bias focuses upper portrait (head & shoulders)
+  const scale = base.scale * (viewport.scale || 1)
   const drawW = srcW * scale
   const drawH = srcH * scale
 
-  const panSrcX = (viewport.x * dstW) / scale
-  const panSrcY = (viewport.y * dstH) / scale
+  // Calculate position with cover offset + user pan adjustments
+  const drawX = dstX + (dstW - drawW) / 2 + (viewport.x || 0) * dstW
+  const drawY = dstY + (base.y) + (viewport.y || 0) * dstH
 
-  ctx.drawImage(
-    img,
-    dstX + dstW / 2 - drawW / 2 + panSrcX,
-    dstY + dstH / 2 - drawH / 2 + panSrcY,
-    drawW,
-    drawH,
-  )
+  ctx.drawImage(img, drawX, drawY, drawW, drawH)
   ctx.restore()
 }
+
