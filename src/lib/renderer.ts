@@ -325,38 +325,38 @@ export function renderId(canvas: HTMLCanvasElement, input: RenderInput): void {
   const nameOffset = lines.length > 1 ? 120 : 50
 
   // BUILDER CLASS Section
-  const classY = py + nameOffset + 45
+  const classY = py + nameOffset + 65
   ctx.fillStyle = '#e07a5f'
-  ctx.font = `700 18px ${BODY}`
+  ctx.font = `700 20px ${BODY}`
   ctx.fillText('BUILDER CLASS', dx, classY)
 
   // Pink pill with crown icon
   ctx.fillStyle = '#e07a5f'
-  roundedRect(ctx, dx, classY + 12, halfW - 570, 60, 18)
+  roundedRect(ctx, dx, classY + 14, Math.min(540, halfW - 570), 65, 18)
   ctx.fill()
   ctx.fillStyle = '#ffffff'
-  ctx.font = `900 32px ${DISPLAY}`
-  ctx.fillText(`${input.builderClass} 👑`, dx + 24, classY + 54)
+  ctx.font = `900 34px ${DISPLAY}`
+  ctx.fillText(`${input.builderClass} 👑`, dx + 24, classY + 58)
 
   // PRIMARY STACK Section
-  const stackY = classY + 115
+  const stackY = classY + 135
   ctx.fillStyle = '#e07a5f'
-  ctx.font = `700 18px ${BODY}`
+  ctx.font = `700 20px ${BODY}`
   ctx.fillText('PRIMARY STACK', dx, stackY)
 
   // Render individual stack pill tags
   const stacks = (input.stackLabel || 'React · Node.js · TypeScript · Python').split(/[\s·,/]+/).filter(Boolean).slice(0, 5)
   let currX = dx
   stacks.forEach((st) => {
-    ctx.font = `700 20px ${BODY}`
-    const stw = ctx.measureText(st).width + 32
+    ctx.font = `700 22px ${BODY}`
+    const stw = ctx.measureText(st).width + 36
     if (currX + stw > W - 60) return
     ctx.fillStyle = '#10221a'
-    roundedRect(ctx, currX, stackY + 12, stw, 44, 12)
+    roundedRect(ctx, currX, stackY + 14, stw, 48, 14)
     ctx.fill()
     ctx.fillStyle = '#ffffff'
-    ctx.fillText(st, currX + 16, stackY + 41)
-    currX += stw + 12
+    ctx.fillText(st, currX + 18, stackY + 46)
+    currX += stw + 14
   })
 
   // Horizontal Separator Line

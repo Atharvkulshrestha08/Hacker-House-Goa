@@ -114,7 +114,7 @@ export default function OutputStep({
       </div>
 
       {/* 3D Flip Card Container */}
-      <div className="relative mx-auto w-full max-w-[640px] [perspective:1000px]">
+      <div className="relative mx-auto w-full max-w-4xl [perspective:1200px]">
         <div className="absolute inset-0 translate-x-2.5 translate-y-2.5 rounded-3xl bg-sun" />
 
         <div

@@ -255,7 +255,7 @@ export default function App() {
         )}
 
         {stage === 'output' && (
-          <div className="mx-auto max-w-2xl">
+          <div className="mx-auto max-w-5xl">
             <h1 className="display mb-1 text-center text-3xl uppercase text-forest sm:text-5xl">
               Welcome to Goa
             </h1>
