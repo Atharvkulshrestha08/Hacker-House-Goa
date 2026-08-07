@@ -161,6 +161,9 @@ try {
     await new Promise((r) => setTimeout(r, 250))
   }
   check('Download filename is HHGoa26_ naming', !!dlFile, dlFile || 'file not found')
+  if (dlFile) {
+    fs.copyFileSync(path.join(ARTIFACTS, dlFile), path.join(ARTIFACTS, 'builder-id.png'))
+  }
   const dlBytes = dlFile ? fs.statSync(path.join(ARTIFACTS, dlFile)).size : 0
   check('Downloaded PNG is a real file', dlBytes > 10000, `${(dlBytes / 1024).toFixed(0)} KB`)
   await new Promise((r) => setTimeout(r, 500))
