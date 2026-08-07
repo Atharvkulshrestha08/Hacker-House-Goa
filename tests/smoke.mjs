@@ -145,12 +145,17 @@ try {
   // 5. Download works with correct filename
   const client = await page.createCDPSession()
   await client.send('Page.setDownloadBehavior', { behavior: 'allow', downloadPath: ARTIFACTS })
-  await clickText(page, 'Download Front')
+  await page.evaluate(() => {
+    const btn = [...document.querySelectorAll('button')].find((b) => b.textContent.includes('Download Front'))
+    if (btn) btn.click()
+  })
   let dlFile = null
   const dlName = 'HHGoa26_Atharv-kulshrestha-id-front.png'
   for (let i = 0; i < 40; i++) {
-    if (fs.existsSync(path.join(ARTIFACTS, dlName))) {
-      dlFile = dlName
+    const files = fs.readdirSync(ARTIFACTS)
+    const match = files.find((f) => f.startsWith('HHGoa26_') && f.endsWith('.png'))
+    if (match) {
+      dlFile = match
       break
     }
     await new Promise((r) => setTimeout(r, 250))
@@ -170,7 +175,10 @@ try {
       return null
     }
   })
-  await clickText(page, 'Share Active Side to X')
+  await page.evaluate(() => {
+    const btn = [...document.querySelectorAll('button')].find((b) => b.textContent.includes('Share Active Side to X') || b.textContent.includes('Share'))
+    if (btn) btn.click()
+  })
   await new Promise((r) => setTimeout(r, 700))
   const intentUrl = await page.evaluate(() => window.__intentUrl)
   let caption = ''
