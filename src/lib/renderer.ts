@@ -403,8 +403,8 @@ export async function renderId(canvas: HTMLCanvasElement, input: RenderInput, qr
     ctx.fillText(nameLines[1], ID_X, nameBottomY)
   }
 
-  // ── BUILDER CLASS ─────────────────────────────────────────────────────────
-  const CLASS_Y = Math.max(nameBottomY + 55, PHOTO_Y + 210)
+  // ── BUILDER CLASS — push down closer to bottom of photo ─────────────────
+  const CLASS_Y = Math.max(nameBottomY + 50, PHOTO_Y + 230)
 
   // Label
   ctx.fillStyle = '#c04a1f'
@@ -422,8 +422,8 @@ export async function renderId(canvas: HTMLCanvasElement, input: RenderInput, qr
   ctx.textAlign = 'left'
   ctx.fillText(classText, ID_X + 22, CLASS_Y + 62)
 
-  // ── PRIMARY STACK ─────────────────────────────────────────────────────────
-  const STACK_Y = CLASS_Y + 70 + 45
+  // ── PRIMARY STACK — pushed lower down towards line ─────────────────────
+  const STACK_Y = CLASS_Y + 70 + 40
 
   ctx.fillStyle = '#c04a1f'
   ctx.font = `700 20px ${BODY}`
@@ -455,8 +455,8 @@ export async function renderId(canvas: HTMLCanvasElement, input: RenderInput, qr
   //  METADATA GRID (below photo and identity columns)
   // ═══════════════════════════════════════════════════════════════════════════
 
-  // Divider — spans full right page width (positioned lower to give breathing room)
-  const GRID_TOP = 760   // pushed down to 760px
+  // Divider — spans full right page width
+  const GRID_TOP = 750
   ctx.strokeStyle = 'rgba(14, 30, 24, 0.14)'
   ctx.lineWidth = 2
   ctx.beginPath()
@@ -468,11 +468,12 @@ export async function renderId(canvas: HTMLCanvasElement, input: RenderInput, qr
   const nameHash = [...input.name].reduce((acc, c) => acc * 31 + c.charCodeAt(0), 0x1a2b)
   const idNum = String(Math.abs(nameHash) % 9000 + 1000)
 
-  // 6 metadata fields in a 3-column × 2-row grid with larger row height
-  const META_LABEL_SIZE = 20   // px for label text
-  const META_VAL_SIZE   = 36   // px for value text  (Anton)
+  // 6 metadata fields in a 3-column × 2-row grid
+  // Expand ROW_H to 240px to expand the gap between BUILDER ID and ORIGIN/DESTINATION as requested!
+  const META_LABEL_SIZE = 22   // px for label text
+  const META_VAL_SIZE   = 38   // px for value text  (Anton)
   const COL_W = (halfW - PAD * 2) / 3   // ~360px per column
-  const ROW_H = 180            // expanded from 140 to 180 to spread vertically!
+  const ROW_H = 230            // INCREASED to 230px to fill the "Expend here" gap!
   const GRID_PAD_Y = 50
 
   const metaItems = [
@@ -499,39 +500,40 @@ export async function renderId(canvas: HTMLCanvasElement, input: RenderInput, qr
     if (item.isStatus) {
       // Green "ACTIVE" pill
       ctx.fillStyle = '#166534'
-      roundedRect(ctx, ix, iy + 12, 136, 50, 16)
+      roundedRect(ctx, ix, iy + 14, 144, 52, 16)
       ctx.fill()
       ctx.fillStyle = '#22c55e'
       ctx.beginPath()
-      ctx.arc(ix + 24, iy + 37, 8, 0, Math.PI * 2)
+      ctx.arc(ix + 26, iy + 40, 9, 0, Math.PI * 2)
       ctx.fill()
       ctx.fillStyle = '#ffffff'
-      ctx.font = `700 22px ${BODY}`
+      ctx.font = `700 24px ${BODY}`
       ctx.textAlign = 'left'
-      ctx.fillText('ACTIVE', ix + 40, iy + 44)
+      ctx.fillText('ACTIVE', ix + 44, iy + 47)
     } else {
       ctx.fillStyle = '#0e1e18'
       ctx.font = `900 ${META_VAL_SIZE}px ${DISPLAY}`
-      ctx.fillText(item.val, ix, iy + 48)
+      ctx.fillText(item.val, ix, iy + 52)
     }
   })
 
   // ── QR Code — aligned with Row 2 right column ─────────────
-  const QR_SIZE = 175
+  const QR_SIZE = 190
   const QR_X = W - PAD - QR_SIZE
-  const QR_Y = GRID_TOP + GRID_PAD_Y + ROW_H + 10
+  const QR_Y = GRID_TOP + GRID_PAD_Y + ROW_H - 15
 
   // White square + gold border for QR
   ctx.fillStyle = '#ffffff'
   ctx.shadowColor = 'rgba(0,0,0,0.12)'
-  ctx.shadowBlur = 12
-  roundedRect(ctx, QR_X - 10, QR_Y - 10, QR_SIZE + 20, QR_SIZE + 20, 18)
+  ctx.shadowBlur = 14
+  roundedRect(ctx, QR_X - 12, QR_Y - 12, QR_SIZE + 24, QR_SIZE + 24, 20)
   ctx.fill()
   ctx.shadowBlur = 0
   ctx.strokeStyle = '#c9a227'
-  ctx.lineWidth = 3
-  roundedRect(ctx, QR_X - 10, QR_Y - 10, QR_SIZE + 20, QR_SIZE + 20, 18)
+  ctx.lineWidth = 3.5
+  roundedRect(ctx, QR_X - 12, QR_Y - 12, QR_SIZE + 24, QR_SIZE + 24, 20)
   ctx.stroke()
+
 
 
   if (qrUrl) {
