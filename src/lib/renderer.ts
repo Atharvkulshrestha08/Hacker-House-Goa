@@ -391,74 +391,74 @@ export async function renderId(canvas: HTMLCanvasElement, input: RenderInput, qr
   ctx.fillStyle = '#0e1e18'
   ctx.textAlign = 'left'
 
-  const name0fit = fitText(ctx, nameLines[0], `80px ${DISPLAY}`, ID_MAX_W)
+  const name0fit = fitText(ctx, nameLines[0], `84px ${DISPLAY}`, ID_MAX_W)
   ctx.font = name0fit.font
-  ctx.fillText(nameLines[0], ID_X, PHOTO_Y + 80)
+  ctx.fillText(nameLines[0], ID_X, PHOTO_Y + 75)
 
-  let nameBottomY = PHOTO_Y + 80
+  let nameBottomY = PHOTO_Y + 75
   if (nameLines[1]) {
-    const name1fit = fitText(ctx, nameLines[1], `80px ${DISPLAY}`, ID_MAX_W)
+    const name1fit = fitText(ctx, nameLines[1], `84px ${DISPLAY}`, ID_MAX_W)
     ctx.font = name1fit.font
-    nameBottomY = PHOTO_Y + 80 + name0fit.size + 16
+    nameBottomY = PHOTO_Y + 75 + name0fit.size + 18
     ctx.fillText(nameLines[1], ID_X, nameBottomY)
   }
 
   // ── BUILDER CLASS ─────────────────────────────────────────────────────────
-  const CLASS_Y = nameBottomY + 48
+  const CLASS_Y = Math.max(nameBottomY + 55, PHOTO_Y + 210)
 
   // Label
   ctx.fillStyle = '#c04a1f'
-  ctx.font = `700 18px ${BODY}`
+  ctx.font = `700 20px ${BODY}`
   ctx.fillText('BUILDER CLASS', ID_X, CLASS_Y)
 
   // Pink/magenta badge
   const classText = `${input.builderClass}  👑`
-  ctx.font = `900 32px ${DISPLAY}`
+  ctx.font = `900 34px ${DISPLAY}`
   const classTw = Math.min(ctx.measureText(classText).width + 52, ID_MAX_W)
   ctx.fillStyle = '#e0185c'
-  roundedRect(ctx, ID_X, CLASS_Y + 12, classTw, 66, 18)
+  roundedRect(ctx, ID_X, CLASS_Y + 14, classTw, 70, 20)
   ctx.fill()
   ctx.fillStyle = '#ffffff'
   ctx.textAlign = 'left'
-  ctx.fillText(classText, ID_X + 22, CLASS_Y + 60)
+  ctx.fillText(classText, ID_X + 22, CLASS_Y + 62)
 
   // ── PRIMARY STACK ─────────────────────────────────────────────────────────
-  const STACK_Y = CLASS_Y + 66 + 32
+  const STACK_Y = CLASS_Y + 70 + 45
 
   ctx.fillStyle = '#c04a1f'
-  ctx.font = `700 18px ${BODY}`
+  ctx.font = `700 20px ${BODY}`
   ctx.fillText('PRIMARY STACK', ID_X, STACK_Y)
 
   const rawStack = input.stackLabel || 'React · Node.js · TypeScript'
   const stackItems = rawStack.split(/[\s·,/|]+/).filter(Boolean).slice(0, 6)
   let chipX = ID_X
-  const CHIP_H = 46
-  const CHIP_Y = STACK_Y + 12
+  const CHIP_H = 50
+  const CHIP_Y = STACK_Y + 14
 
   stackItems.forEach((label) => {
-    ctx.font = `700 22px ${BODY}`
+    ctx.font = `700 24px ${BODY}`
     const tw = ctx.measureText(label).width
-    const chipW = tw + 36
+    const chipW = tw + 40
     if (chipX + chipW > W - 50) return
     // Chip background
     ctx.fillStyle = '#1a2e24'
-    roundedRect(ctx, chipX, CHIP_Y, chipW, CHIP_H, 12)
+    roundedRect(ctx, chipX, CHIP_Y, chipW, CHIP_H, 14)
     ctx.fill()
     // Chip text
     ctx.fillStyle = '#ffffff'
     ctx.textAlign = 'left'
-    ctx.fillText(label, chipX + 18, CHIP_Y + 32)
-    chipX += chipW + 14
+    ctx.fillText(label, chipX + 20, CHIP_Y + 34)
+    chipX += chipW + 16
   })
 
   // ═══════════════════════════════════════════════════════════════════════════
   //  METADATA GRID (below photo and identity columns)
   // ═══════════════════════════════════════════════════════════════════════════
 
-  // Divider — spans full right page width
-  const GRID_TOP = 740   // fixed y — gives consistent position regardless of name length
-  ctx.strokeStyle = 'rgba(14, 30, 24, 0.12)'
-  ctx.lineWidth = 1.5
+  // Divider — spans full right page width (positioned lower to give breathing room)
+  const GRID_TOP = 760   // pushed down to 760px
+  ctx.strokeStyle = 'rgba(14, 30, 24, 0.14)'
+  ctx.lineWidth = 2
   ctx.beginPath()
   ctx.moveTo(R + PAD, GRID_TOP)
   ctx.lineTo(W - PAD, GRID_TOP)
@@ -468,14 +468,12 @@ export async function renderId(canvas: HTMLCanvasElement, input: RenderInput, qr
   const nameHash = [...input.name].reduce((acc, c) => acc * 31 + c.charCodeAt(0), 0x1a2b)
   const idNum = String(Math.abs(nameHash) % 9000 + 1000)
 
-  // 6 metadata fields in a 3-column × 2-row grid
-  // The QR code occupies position [1][2] (row 1, col 2 — the "MISSION" spot on the right)
-  // so we only render 5 regular items + 1 QR
+  // 6 metadata fields in a 3-column × 2-row grid with larger row height
   const META_LABEL_SIZE = 20   // px for label text
   const META_VAL_SIZE   = 36   // px for value text  (Anton)
   const COL_W = (halfW - PAD * 2) / 3   // ~360px per column
-  const ROW_H = 140
-  const GRID_PAD_Y = 48
+  const ROW_H = 180            // expanded from 140 to 180 to spread vertically!
+  const GRID_PAD_Y = 50
 
   const metaItems = [
     { label: 'BUILDER ID',   val: `HHG26-${idNum}`,          accent: false },
@@ -501,30 +499,25 @@ export async function renderId(canvas: HTMLCanvasElement, input: RenderInput, qr
     if (item.isStatus) {
       // Green "ACTIVE" pill
       ctx.fillStyle = '#166534'
-      roundedRect(ctx, ix, iy + 10, 130, 48, 14)
+      roundedRect(ctx, ix, iy + 12, 136, 50, 16)
       ctx.fill()
       ctx.fillStyle = '#22c55e'
       ctx.beginPath()
-      ctx.arc(ix + 22, iy + 34, 8, 0, Math.PI * 2)
+      ctx.arc(ix + 24, iy + 37, 8, 0, Math.PI * 2)
       ctx.fill()
       ctx.fillStyle = '#ffffff'
       ctx.font = `700 22px ${BODY}`
       ctx.textAlign = 'left'
-      ctx.fillText('ACTIVE', ix + 38, iy + 42)
+      ctx.fillText('ACTIVE', ix + 40, iy + 44)
     } else {
       ctx.fillStyle = '#0e1e18'
       ctx.font = `900 ${META_VAL_SIZE}px ${DISPLAY}`
-      ctx.fillText(item.val, ix, iy + 44)
+      ctx.fillText(item.val, ix, iy + 48)
     }
   })
 
-  // ── QR Code — replaces the 3rd column of row 2 (MISSION area) ─────────────
-  // But we DO keep MISSION text; QR sits right of DESTINATION col (col=2, row=1)
-  // Actually: MISSION is col=2 row=1, QR goes to the same spot.
-  // Let's place QR in col=2 row=1 and not render MISSION text separately.
-  // (MISSION text rendered already above as item[5])
-  // Override: put QR between MISSION and right edge.
-  const QR_SIZE = 158
+  // ── QR Code — aligned with Row 2 right column ─────────────
+  const QR_SIZE = 175
   const QR_X = W - PAD - QR_SIZE
   const QR_Y = GRID_TOP + GRID_PAD_Y + ROW_H + 10
 
@@ -532,13 +525,14 @@ export async function renderId(canvas: HTMLCanvasElement, input: RenderInput, qr
   ctx.fillStyle = '#ffffff'
   ctx.shadowColor = 'rgba(0,0,0,0.12)'
   ctx.shadowBlur = 12
-  roundedRect(ctx, QR_X - 8, QR_Y - 8, QR_SIZE + 16, QR_SIZE + 16, 16)
+  roundedRect(ctx, QR_X - 10, QR_Y - 10, QR_SIZE + 20, QR_SIZE + 20, 18)
   ctx.fill()
   ctx.shadowBlur = 0
   ctx.strokeStyle = '#c9a227'
-  ctx.lineWidth = 2.5
-  roundedRect(ctx, QR_X - 8, QR_Y - 8, QR_SIZE + 16, QR_SIZE + 16, 16)
+  ctx.lineWidth = 3
+  roundedRect(ctx, QR_X - 10, QR_Y - 10, QR_SIZE + 20, QR_SIZE + 20, 18)
   ctx.stroke()
+
 
   if (qrUrl) {
     await drawQR(ctx, qrUrl, QR_X, QR_Y, QR_SIZE)
