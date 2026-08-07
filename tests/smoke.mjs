@@ -103,7 +103,7 @@ try {
   check('Reroll changes class', cls1 !== cls2, `${cls1} → ${cls2}`)
 
   await clickText(page, 'Generate my ID')
-  await page.waitForFunction(() => document.body.textContent.includes('Download ID'), { timeout: 15000 })
+  await page.waitForFunction(() => document.body.textContent.includes('Download'), { timeout: 15000 })
   check('Output screen reached', true)
 
   const actualClass = await page.evaluate(() => {
@@ -145,9 +145,9 @@ try {
   // 5. Download works with correct filename
   const client = await page.createCDPSession()
   await client.send('Page.setDownloadBehavior', { behavior: 'allow', downloadPath: ARTIFACTS })
-  await clickText(page, 'Download ID')
+  await clickText(page, 'Download Front')
   let dlFile = null
-  const dlName = 'HHGoa26_Atharv-kulshrestha-id.png'
+  const dlName = 'HHGoa26_Atharv-kulshrestha-id-front.png'
   for (let i = 0; i < 40; i++) {
     if (fs.existsSync(path.join(ARTIFACTS, dlName))) {
       dlFile = dlName
@@ -227,7 +227,7 @@ try {
   await clickText(page, 'Get my Builder Class')
   await page.waitForFunction(() => document.body.textContent.includes('Reroll Class'), { timeout: 10000 })
   await clickText(page, 'Generate my ID')
-  await page.waitForFunction(() => document.body.textContent.includes('Download ID'), { timeout: 15000 })
+  await page.waitForFunction(() => document.body.textContent.includes('Download'), { timeout: 15000 })
   const longName = await page.evaluate(() => {
     const canvas = document.querySelector('canvas')
     const ctx = canvas.getContext('2d')
