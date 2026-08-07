@@ -2,6 +2,7 @@ import type { DecodedImage } from './image'
 import { drawCoveredImage, type DrawViewport } from './image'
 import { OUTPUT_SIZES, type OutputType } from '../types'
 import { drawQR } from './qr'
+import { buildGoaSvg, loadSvg } from './goa-illustration'
 
 export interface RenderInput {
   name: string
@@ -178,247 +179,34 @@ export async function renderId(canvas: HTMLCanvasElement, input: RenderInput, qr
 
   // ── Illustration Panel ────────────────────────────────────────────────────
   // Panel occupies y: 460 → 1100 (640px tall), padded 70px each side
-  const IL = 70          // left x of illustration
-  const IR = halfW - 70  // right x
-  const IW = IR - IL     // width: ~1060
-  const IT = 460         // top y
-  const IB = 1100        // bottom y
-  const IH = IB - IT     // height: 640
+  const IL = 70
+  const IT = 460
+  const IW = halfW - 140   // ~1060
+  const IH = 640
 
-  // Clip illustration to rounded rect
+  // Clip to rounded rect
   ctx.save()
   roundedRect(ctx, IL, IT, IW, IH, 28)
   ctx.clip()
 
-  // Sky gradient: lush light green → warm sandy horizon
-  const skyG = ctx.createLinearGradient(0, IT, 0, IT + IH * 0.55)
-  skyG.addColorStop(0,   '#1a6b3c')   // deep green top
-  skyG.addColorStop(0.4, '#3a9a5c')   // mid green
-  skyG.addColorStop(0.7, '#f5c06a')   // warm golden horizon
-  skyG.addColorStop(1,   '#e6955a')   // sandy orange at waterline
-  ctx.fillStyle = skyG
-  ctx.fillRect(IL, IT, IW, IH)
-
-  // Ocean / water (bottom third of illustration)
-  const waterY = IT + IH * 0.60
-  const oceanG = ctx.createLinearGradient(0, waterY, 0, IB)
-  oceanG.addColorStop(0, '#1a7a6a')
-  oceanG.addColorStop(1, '#0f5a52')
-  ctx.fillStyle = oceanG
-  ctx.fillRect(IL, waterY, IW, IB - waterY)
-
-  // Beach strip between ocean and sky
-  ctx.fillStyle = '#e8c97a'
-  ctx.fillRect(IL, waterY - 24, IW, 28)
-
-  // ── Sun (large yellow circle, lower-left of sky) ─────────────────────────
-  ctx.fillStyle = '#f9d030'
-  ctx.beginPath()
-  ctx.arc(IL + 200, IT + IH * 0.38, 72, 0, Math.PI * 2)
-  ctx.fill()
-
-  // ── Fluffy Clouds ─────────────────────────────────────────────────────────
-  function drawCloud(cx: number, cy: number, s: number) {
-    ctx.fillStyle = '#e8f5e4'
-    ;[[0, 0, s], [-s*0.9, s*0.2, s*0.7], [s*0.9, s*0.2, s*0.7],
-      [-s*0.5, -s*0.3, s*0.6], [s*0.5, -s*0.3, s*0.55]
-    ].forEach(([dx, dy, r]) => {
-      ctx.beginPath()
-      ctx.arc(cx + dx, cy + dy, r, 0, Math.PI * 2)
-      ctx.fill()
-    })
-  }
-  drawCloud(IL + 700, IT + 100, 55)
-  drawCloud(IL + 880, IT + 160, 42)
-  drawCloud(IL + 350, IT + 70,  38)
-  drawCloud(IL + 820, IT + 70,  32)
-
-  // ── Portuguese Goan Church (centre) ───────────────────────────────────────
-  const CX = halfW / 2
-  const CY = IT + IH * 0.58 // base of church = just above waterline
-
-  // Main body — cream/ivory
-  ctx.fillStyle = '#fdf4d0'
-  ctx.fillRect(CX - 110, CY - 200, 220, 200)
-
-  // Red roof / pediment
-  ctx.fillStyle = '#b83232'
-  ctx.beginPath()
-  ctx.moveTo(CX - 130, CY - 200)
-  ctx.lineTo(CX,       CY - 310)
-  ctx.lineTo(CX + 130, CY - 200)
-  ctx.closePath()
-  ctx.fill()
-
-  // Pediment accent (darker edge)
-  ctx.fillStyle = '#8c1e1e'
-  ctx.beginPath()
-  ctx.moveTo(CX - 130, CY - 200)
-  ctx.lineTo(CX,       CY - 310)
-  ctx.lineTo(CX + 130, CY - 200)
-  ctx.lineTo(CX + 130, CY - 190)
-  ctx.lineTo(CX,       CY - 298)
-  ctx.lineTo(CX - 130, CY - 190)
-  ctx.closePath()
-  ctx.fill()
-
-  // Bell tower
-  ctx.fillStyle = '#fdf4d0'
-  ctx.fillRect(CX - 32, CY - 360, 64, 160)
-  // Tower roof
-  ctx.fillStyle = '#b83232'
-  ctx.beginPath()
-  ctx.moveTo(CX - 40, CY - 360)
-  ctx.lineTo(CX,      CY - 418)
-  ctx.lineTo(CX + 40, CY - 360)
-  ctx.closePath()
-  ctx.fill()
-
-  // Arched window on tower
-  ctx.fillStyle = '#0b2d1e'
-  ctx.fillRect(CX - 10, CY - 340, 20, 26)
-  ctx.beginPath()
-  ctx.arc(CX, CY - 340, 10, Math.PI, 0)
-  ctx.fill()
-
-  // Church door arch
-  ctx.fillStyle = '#0b2d1e'
-  ctx.fillRect(CX - 20, CY - 80, 40, 80)
-  ctx.beginPath()
-  ctx.arc(CX, CY - 80, 20, Math.PI, 0)
-  ctx.fill()
-
-  // Windows (two arched)
-  ctx.fillStyle = '#0b2d1e'
-  ;[-60, 60].forEach(ox => {
-    ctx.fillRect(CX + ox - 14, CY - 160, 28, 40)
-    ctx.beginPath()
-    ctx.arc(CX + ox, CY - 160, 14, Math.PI, 0)
-    ctx.fill()
-  })
-
-  // ── Left tall palm ────────────────────────────────────────────────────────
-  const drawPalm = (px: number, baseY: number, trunkH: number, lean: number) => {
-    // Trunk (slightly curved)
-    ctx.strokeStyle = '#1a3d1a'
-    ctx.lineWidth = 14
-    ctx.lineCap = 'round'
-    ctx.beginPath()
-    ctx.moveTo(px, baseY)
-    ctx.quadraticCurveTo(px + lean * 0.5, baseY - trunkH * 0.5, px + lean, baseY - trunkH)
-    ctx.stroke()
-
-    // Fronds (8 leaf fans)
-    const topX = px + lean
-    const topY = baseY - trunkH
-    const fronds = [
-      [-80, -60], [-50, -90], [0, -100], [50, -90],
-      [80, -60],  [70, -20],  [-70, -20], [-30, -110],
-    ]
-    ctx.lineWidth = 8
-    fronds.forEach(([fx, fy]) => {
-      ctx.strokeStyle = '#0f6b30'
-      ctx.beginPath()
-      ctx.moveTo(topX, topY)
-      ctx.quadraticCurveTo(topX + fx * 0.5, topY + fy * 0.6, topX + fx, topY + fy)
-      ctx.stroke()
-    })
-    // Coconuts
-    ctx.fillStyle = '#5a3010'
-    ctx.beginPath()
-    ctx.arc(topX - 8, topY + 12, 14, 0, Math.PI * 2)
-    ctx.fill()
-    ctx.beginPath()
-    ctx.arc(topX + 10, topY + 18, 12, 0, Math.PI * 2)
-    ctx.fill()
+  // Render the SVG illustration (vector quality)
+  try {
+    const svgImg = await loadSvg(buildGoaSvg())
+    ctx.drawImage(svgImg, IL, IT, IW, IH)
+  } catch {
+    // Fallback: plain green fill if SVG fails
+    ctx.fillStyle = '#1a6b38'
+    ctx.fillRect(IL, IT, IW, IH)
   }
 
-  drawPalm(IL + 130, IB,       380, -30)   // far left, leaning left slightly
-  drawPalm(IL + 240, IB,       320,  40)   // second left, leaning right
-  drawPalm(IR - 130, IB,       360,  30)   // far right, leaning right
-  drawPalm(IR - 240, IB,       290, -40)   // second right
+  ctx.restore()
 
-  // ── Hot air balloon ───────────────────────────────────────────────────────
-  const BX = IL + IW * 0.72
-  const BY = IT + 180
-
-  // Balloon envelope
-  const balloonG = ctx.createRadialGradient(BX, BY, 10, BX, BY, 65)
-  balloonG.addColorStop(0, '#e04060')
-  balloonG.addColorStop(1, '#8b1a30')
-  ctx.fillStyle = balloonG
-  ctx.beginPath()
-  ctx.ellipse(BX, BY, 62, 78, 0, 0, Math.PI * 2)
-  ctx.fill()
-
-  // Balloon stripes
-  ctx.strokeStyle = 'rgba(255,255,255,0.3)'
-  ctx.lineWidth = 6
-  ;[-24, 0, 24].forEach(ox => {
-    ctx.beginPath()
-    ctx.moveTo(BX + ox, BY - 70)
-    ctx.lineTo(BX + ox, BY + 70)
-    ctx.stroke()
-  })
-
-  // Basket ropes
-  ctx.strokeStyle = '#8b6000'
-  ctx.lineWidth = 2
-  ;[-26, 26].forEach(ox => {
-    ctx.beginPath()
-    ctx.moveTo(BX + ox, BY + 72)
-    ctx.lineTo(BX + ox * 0.5, BY + 100)
-    ctx.stroke()
-  })
-
-  // Basket
-  ctx.fillStyle = '#8b6000'
-  ctx.fillRect(BX - 24, BY + 100, 48, 26)
-  ctx.strokeStyle = '#5a3a00'
-  ctx.lineWidth = 2
-  ctx.strokeRect(BX - 24, BY + 100, 48, 26)
-
-  // ── Sailboat ──────────────────────────────────────────────────────────────
-  const SBX = IL + 260
-  const SBY = waterY + 8
-
-  // Sail (white triangle)
-  ctx.fillStyle = '#ffffff'
-  ctx.beginPath()
-  ctx.moveTo(SBX, SBY - 110)
-  ctx.lineTo(SBX, SBY)
-  ctx.lineTo(SBX + 70, SBY)
-  ctx.closePath()
-  ctx.fill()
-
-  // Hull
-  ctx.fillStyle = '#b83232'
-  ctx.beginPath()
-  ctx.moveTo(SBX - 12, SBY)
-  ctx.lineTo(SBX + 80, SBY)
-  ctx.lineTo(SBX + 65, SBY + 22)
-  ctx.lineTo(SBX + 2,  SBY + 22)
-  ctx.closePath()
-  ctx.fill()
-
-  // Small birds (V shapes)
-  ctx.strokeStyle = '#0b2d1e'
-  ctx.lineWidth = 2.5
-  ;[[700, 130], [750, 100], [800, 145], [860, 118]].forEach(([bx, by]) => {
-    ctx.beginPath()
-    ctx.moveTo(IL + bx - 14, IT + by)
-    ctx.lineTo(IL + bx,      IT + by - 10)
-    ctx.lineTo(IL + bx + 14, IT + by)
-    ctx.stroke()
-  })
-
-  ctx.restore() // end illustration clip
-
-  // Illustration border
-  ctx.strokeStyle = 'rgba(201,162,39,0.5)'
+  // Gold border around illustration
+  ctx.strokeStyle = 'rgba(201,162,39,0.55)'
   ctx.lineWidth = 3
   roundedRect(ctx, IL, IT, IW, IH, 28)
   ctx.stroke()
+
 
   // ── गोवा / GOA / ONE FRAME WHOLE CREW ─────────────────────────────────────
   // "गोवा" in large warm orange-gold
