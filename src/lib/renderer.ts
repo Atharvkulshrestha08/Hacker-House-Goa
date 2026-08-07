@@ -157,22 +157,30 @@ export async function renderId(canvas: HTMLCanvasElement, input: RenderInput, qr
     const embW = 120
     const embH = 120
 
-    // Gold circular backing ring
-    ctx.strokeStyle = '#c9a227'
-    ctx.lineWidth = 2
-    ctx.beginPath()
-    ctx.arc(embX + embW / 2, embY + embH / 2, 66, 0, Math.PI * 2)
-    ctx.stroke()
-
-    ctx.lineWidth = 1
+    // White circular backing mask
+    ctx.fillStyle = '#ffffff'
     ctx.beginPath()
     ctx.arc(embX + embW / 2, embY + embH / 2, 60, 0, Math.PI * 2)
+    ctx.fill()
+
+    // Gold circular backing ring
+    ctx.strokeStyle = '#c9a227'
+    ctx.lineWidth = 3
+    ctx.beginPath()
+    ctx.arc(embX + embW / 2, embY + embH / 2, 64, 0, Math.PI * 2)
     ctx.stroke()
 
-    // Draw Official Emblem Image
+    // Clip image to circular shape for pristine transparency
+    ctx.save()
+    ctx.beginPath()
+    ctx.arc(embX + embW / 2, embY + embH / 2, 58, 0, Math.PI * 2)
+    ctx.clip()
     ctx.drawImage(emblem, embX, embY, embW, embH)
     ctx.restore()
+
+    ctx.restore()
   } else {
+
     // Fallback circular stamp
     ctx.save()
     ctx.translate(halfW - 118, 110)
@@ -678,10 +686,10 @@ export async function renderId(canvas: HTMLCanvasElement, input: RenderInput, qr
   ctx.fillText('HHG', 0, 8)
   ctx.restore()
 
-  // 3. RIGHT: QR Code Box & Official Signature
-  const QR_SIZE = 150
-  const QR_X = W - PAD - QR_SIZE - 220
-  const QR_Y = ROW_Y - 5
+  // 3. QR CODE BOX (Mid Right)
+  const QR_SIZE = 130
+  const QR_X = SEAL_X + 115
+  const QR_Y = ROW_Y - 8
 
   ctx.fillStyle = '#ffffff'
   ctx.shadowColor = 'rgba(0,0,0,0.10)'
@@ -696,10 +704,9 @@ export async function renderId(canvas: HTMLCanvasElement, input: RenderInput, qr
 
   await drawQR(ctx, qrUrl, QR_X, QR_Y, QR_SIZE)
 
-
-  // Official Signature & Authorization
-  const SIG_X = W - PAD - 100
-  const SIG_Y = ROW_Y + 15
+  // 4. SIGNATURE BLOCK (Far Right)
+  const SIG_X = W - PAD - 120
+  const SIG_Y = ROW_Y + 10
 
   ctx.fillStyle = '#0e1e18'
   ctx.font = `italic 38px "Instrument Serif", Georgia, serif`
