@@ -84,7 +84,7 @@ try {
     classBand: { kind: 'px', x: 1750, y: 350 },
     footerInk: { kind: 'diff', y0: 1350, y1: 1550, x0: 1300, x1: 1800, bg: [247, 244, 234], tol: 20 },
   })
-  ok('ID size', id.w === 2400 && id.h === 1600, `${id.w}×${id.h}`)
+  ok('ID size 2400×1600', id.w === 2400 && id.h === 1600, `${id.w}×${id.h}`)
   ok('Cover page dark green', id.results.header.p[1] > 15, JSON.stringify(id.results.header.p))
   ok('Photo occupies right page', true, JSON.stringify(id.results.photo.p))
   ok('Name text visible on passport data page', id.results.nameInk.ratio > 0.01, `diff ${(id.results.nameInk.ratio * 100).toFixed(1)}%`)
