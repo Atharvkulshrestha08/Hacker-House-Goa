@@ -170,7 +170,7 @@ try {
       return null
     }
   })
-  await clickText(page, 'Share to X')
+  await clickText(page, 'Share Active Side to X')
   await new Promise((r) => setTimeout(r, 700))
   const intentUrl = await page.evaluate(() => window.__intentUrl)
   let caption = ''
