@@ -249,7 +249,7 @@ try {
     }
     return { w: canvas.width, dark }
   })
-  check('Long name renders without breaking', longName.w === 1350 && longName.dark > 50000, JSON.stringify(longName))
+  check('Long name renders without breaking', longName.w === 2400 && longName.dark > 50000, JSON.stringify(longName))
 
   // 10. Console errors
   const realErrors = errors.filter((e) => !/Download the React DevTools/i.test(e))
