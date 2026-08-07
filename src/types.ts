@@ -34,6 +34,6 @@ export interface Viewport {
 }
 
 export const OUTPUT_SIZES = {
-  id: { width: 1350, height: 1688 },
+  id: { width: 2400, height: 1600 },
   pfp: { width: 1080, height: 1080 },
 } as const

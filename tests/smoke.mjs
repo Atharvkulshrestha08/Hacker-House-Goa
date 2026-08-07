@@ -130,8 +130,8 @@ try {
     return { w: canvas.width, h: canvas.height, colored, transparent }
   })
   check(
-    'ID canvas 1350×1688 with content',
-    pixelInfo?.w === 1350 && pixelInfo?.h === 1688 && pixelInfo.colored > 1000,
+    'ID canvas 2400×1600 with content',
+    pixelInfo?.w === 2400 && pixelInfo?.h === 1600 && pixelInfo.colored > 1000,
     JSON.stringify(pixelInfo),
   )
 

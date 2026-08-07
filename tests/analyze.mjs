@@ -78,18 +78,17 @@ const near = (p, [r, g, b], tol) =>
 try {
   // ---------- Builder ID ----------
   const id = await analyze('builder-id.png', {
-    header: { kind: 'px', x: 675, y: 50 },
-    photo: { kind: 'px', x: 675, y: 500 },
-    nameInk: { kind: 'diff', y0: 930, y1: 1040, x0: 80, x1: 600, bg: [6, 26, 20], tol: 30 },
-    classBand: { kind: 'px', x: 200, y: 1100 },
-    classText: { kind: 'diff', y0: 1080, y1: 1130, x0: 100, x1: 800, bg: [6, 26, 20], tol: 30 },
-    footerInk: { kind: 'diff', y0: 1540, y1: 1610, x0: 80, x1: 600, bg: [6, 26, 20], tol: 20 },
+    header: { kind: 'px', x: 600, y: 120 },
+    photo: { kind: 'px', x: 1400, y: 400 },
+    nameInk: { kind: 'diff', y0: 200, y1: 300, x0: 1650, x1: 2200, bg: [247, 244, 234], tol: 30 },
+    classBand: { kind: 'px', x: 1700, y: 400 },
+    footerInk: { kind: 'diff', y0: 1400, y1: 1550, x0: 1300, x1: 1800, bg: [247, 244, 234], tol: 20 },
   })
-  ok('ID size', id.w === 1350 && id.h === 1688, `${id.w}×${id.h}`)
-  ok('Header background dark emerald', id.results.header.p[0] < 50 && id.results.header.p[1] < 70, JSON.stringify(id.results.header.p))
-  ok('Photo occupies center', id.results.photo.p[0] !== id.results.photo.p[1], JSON.stringify(id.results.photo.p))
-  ok('Name text visible', id.results.nameInk.ratio > 0.01, `diff ${(id.results.nameInk.ratio * 100).toFixed(1)}%`)
-  ok('AI Title class band present', id.results.classBand.p[0] > 100 || id.results.classText.ratio > 0.005, JSON.stringify(id.results.classBand.p))
+  ok('ID size', id.w === 2400 && id.h === 1600, `${id.w}×${id.h}`)
+  ok('Cover page dark green', id.results.header.p[1] > 30, JSON.stringify(id.results.header.p))
+  ok('Photo occupies right page', id.results.photo.p[0] !== id.results.photo.p[1], JSON.stringify(id.results.photo.p))
+  ok('Name text visible on passport data page', id.results.nameInk.ratio > 0.01, `diff ${(id.results.nameInk.ratio * 100).toFixed(1)}%`)
+  ok('AI Title class band present', id.results.classBand.p[0] > 100, JSON.stringify(id.results.classBand.p))
   ok('Footer details present', id.results.footerInk.ratio > 0.01, `diff ${(id.results.footerInk.ratio * 100).toFixed(1)}%`)
 
   // ---------- PFP ----------

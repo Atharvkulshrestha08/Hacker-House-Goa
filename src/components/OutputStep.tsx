@@ -114,7 +114,7 @@ export default function OutputStep({
       </div>
 
       {/* 3D Flip Card Container */}
-      <div className="relative mx-auto w-full max-w-[380px] [perspective:1000px]">
+      <div className="relative mx-auto w-full max-w-[640px] [perspective:1000px]">
         <div className="absolute inset-0 translate-x-2.5 translate-y-2.5 rounded-3xl bg-sun" />
 
         <div
@@ -125,7 +125,7 @@ export default function OutputStep({
           className={`relative cursor-pointer overflow-hidden rounded-3xl border-4 border-forest shadow-2xl transition-transform duration-700 [transform-style:preserve-3d] ${
             flipped ? '[transform:rotateY(180deg)]' : ''
           }`}
-          style={{ aspectRatio: type === 'id' ? '4 / 5' : '1 / 1' }}
+          style={{ aspectRatio: type === 'id' ? '3 / 2' : '1 / 1' }}
           title={type === 'id' ? 'Click card to flip front/back' : undefined}
         >
           {/* Front Side */}
