@@ -582,10 +582,11 @@ export async function renderId(canvas: HTMLCanvasElement, input: RenderInput, qr
 
   // ═══════════════════════════════════════════════════════════════════════════
   //  SECTION 3 (Bottom 25%: y 1160 → 1600)
-  //  Straight horizontal row with equal spacing:
-  //  Left: Full-width Barcode & Serial
-  //  Center: Premium Gold Verification Seal
-  //  Right: QR Code & Official Signature block
+  //  Equal 4-column horizontal distribution:
+  //  Col 1 (Left): Barcode & Serial
+  //  Col 2 (Mid-Left): Premium Gold Verification Seal
+  //  Col 3 (Mid-Right): QR Code Box
+  //  Col 4 (Far Right): Official Signature & Authorization
   // ═══════════════════════════════════════════════════════════════════════════
 
   const SEC3_Y = 1160
@@ -600,9 +601,9 @@ export async function renderId(canvas: HTMLCanvasElement, input: RenderInput, qr
 
   const ROW_Y = SEC3_Y + 50
 
-  // 1. LEFT: Full-width Barcode + Passport serial number underneath
+  // 1. BARCODE (Far Left)
   const BC_X = R + PAD
-  const BC_W = 340
+  const BC_W = 270
   const BC_H = 85
 
   ctx.fillStyle = '#0e1e18'
