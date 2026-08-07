@@ -309,6 +309,122 @@ export function renderId(canvas: HTMLCanvasElement, input: RenderInput): void {
   ctx.fillText('#FrameInGoa · HHG-BOARDING-PASS-2026-VERIFIED', 80, footerY + 78)
 }
 
+export function renderIdBack(canvas: HTMLCanvasElement, input: RenderInput): void {
+  const { width: W, height: H } = OUTPUT_SIZES.id
+  if (canvas.width !== W || canvas.height !== H) {
+    canvas.width = W
+    canvas.height = H
+  }
+  const ctx = canvas.getContext('2d')!
+  ctx.clearRect(0, 0, W, H)
+
+  // 1. Dark Emerald Holographic Background
+  ctx.fillStyle = '#061a14'
+  ctx.fillRect(0, 0, W, H)
+
+  // Cyber Grid pattern
+  ctx.strokeStyle = 'rgba(0, 230, 153, 0.05)'
+  ctx.lineWidth = 2
+  for (let x = 0; x < W; x += 40) {
+    ctx.beginPath()
+    ctx.moveTo(x, 0)
+    ctx.lineTo(x, H)
+    ctx.stroke()
+  }
+  for (let y = 0; y < H; y += 40) {
+    ctx.beginPath()
+    ctx.moveTo(0, y)
+    ctx.lineTo(W, y)
+    ctx.stroke()
+  }
+
+  // 2. Magnetic Stripe Band
+  ctx.fillStyle = '#0a100d'
+  ctx.fillRect(0, 120, W, 180)
+  ctx.fillStyle = 'rgba(255, 210, 63, 0.15)'
+  ctx.fillRect(0, 150, W, 120)
+
+  // 3. Signature Panel / Hologram Chip
+  ctx.fillStyle = '#ffffff'
+  roundedRect(ctx, 80, 360, W - 320, 90, 12)
+  ctx.fill()
+  ctx.fillStyle = 'rgba(10, 61, 46, 0.5)'
+  ctx.font = `italic 28px ${BODY}`
+  ctx.textAlign = 'left'
+  ctx.fillText(`AUTHENTICATED: ${input.name.toUpperCase() || 'HHG BUILDER'}`, 110, 415)
+
+  // Hologram Security Emblem
+  ctx.save()
+  ctx.translate(W - 180, 360)
+  const chipGrad = ctx.createLinearGradient(0, 0, 100, 90)
+  chipGrad.addColorStop(0, '#ffd23f')
+  chipGrad.addColorStop(0.5, '#ff3da8')
+  chipGrad.addColorStop(1, '#00e699')
+  ctx.fillStyle = chipGrad
+  roundedRect(ctx, 0, 0, 100, 90, 16)
+  ctx.fill()
+  ctx.fillStyle = '#061a14'
+  ctx.font = `900 24px ${DISPLAY}`
+  ctx.textAlign = 'center'
+  ctx.fillText('HHG', 50, 52)
+  ctx.restore()
+
+  // 4. Large Tropical Palms Crest Graphic
+  ctx.textAlign = 'center'
+  ctx.fillStyle = 'rgba(0, 230, 153, 0.08)'
+  ctx.font = `900 220px ${DISPLAY}`
+  ctx.fillText('🌴', W / 2, 780)
+
+  ctx.fillStyle = '#ffffff'
+  ctx.font = `900 64px ${DISPLAY}`
+  ctx.fillText('HACKER HOUSE GOA 2026', W / 2, 880)
+
+  ctx.fillStyle = '#ffd23f'
+  ctx.font = `700 28px ${BODY}`
+  ctx.fillText('BUILD · SHIP · HACK', W / 2, 930)
+
+  // 5. Official Guidelines Box
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.03)'
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)'
+  ctx.lineWidth = 2
+  roundedRect(ctx, 80, 1000, W - 160, 450, 24)
+  ctx.fill()
+  ctx.stroke()
+
+  ctx.fillStyle = '#00e699'
+  ctx.font = `700 22px ${BODY}`
+  ctx.textAlign = 'left'
+  ctx.fillText('OFFICIAL PARTICIPANT RULES & BENEFIT PASS', 120, 1050)
+
+  const rules = [
+    '• Grants entry to main hacker venue, workshops, and side events.',
+    '• Non-transferable card assigned exclusively to registered builders.',
+    '• Scannable QR & Barcode code verifies leaderboard standing.',
+    '• Tag your projects with #FrameInGoa for official showcase placement.',
+    '• Organized by 2:47PM Studio · 28–31 Oct 2026 · Goa, India',
+  ]
+
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.75)'
+  ctx.font = `400 20px ${BODY}`
+  rules.forEach((rule, idx) => {
+    ctx.fillText(rule, 120, 1100 + idx * 52)
+  })
+
+  // 6. QR Code Placeholder Graphic
+  ctx.fillStyle = '#ffffff'
+  roundedRect(ctx, W / 2 - 60, 1490, 120, 120, 16)
+  ctx.fill()
+  ctx.fillStyle = '#061a14'
+  ctx.font = `900 48px ${DISPLAY}`
+  ctx.textAlign = 'center'
+  ctx.fillText('QR', W / 2, 1565)
+
+  // Bottom text
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.4)'
+  ctx.font = `16px monospace`
+  ctx.fillText('#FrameInGoa · OFFICIAL BACKEND IDENTITY PASS · HHGOA.COM', W / 2, H - 30)
+}
+
 export function renderPfp(canvas: HTMLCanvasElement, input: RenderInput): void {
   const { width: S, height: SH } = OUTPUT_SIZES.pfp
   if (canvas.width !== S || canvas.height !== SH) {
@@ -381,9 +497,14 @@ export function renderOutput(
   canvas: HTMLCanvasElement,
   type: OutputType,
   input: RenderInput,
+  side: 'front' | 'back' = 'front',
 ): void {
-  if (type === 'id') renderId(canvas, input)
-  else renderPfp(canvas, input)
+  if (type === 'id') {
+    if (side === 'back') renderIdBack(canvas, input)
+    else renderId(canvas, input)
+  } else {
+    renderPfp(canvas, input)
+  }
 }
 
 export interface SquadMember {
