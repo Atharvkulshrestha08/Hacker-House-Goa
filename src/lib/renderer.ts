@@ -26,8 +26,22 @@ const DISPLAY = '"Anton", "Baloo 2", sans-serif'
 const BODY = '"Space Grotesk", system-ui, sans-serif'
 
 let fontsLoaded: Promise<void> | null = null
+let emblemImgPromise: Promise<HTMLImageElement | null> | null = null
+
+function getEmblemImage(): Promise<HTMLImageElement | null> {
+  if (!emblemImgPromise) {
+    emblemImgPromise = new Promise((resolve) => {
+      const img = new Image()
+      img.onload = () => resolve(img)
+      img.onerror = () => resolve(null)
+      img.src = '/emblem.png'
+    })
+  }
+  return emblemImgPromise
+}
 
 export function ensureFonts(): Promise<void> {
+
   if (!fontsLoaded) {
     fontsLoaded = (async () => {
       try {
@@ -134,30 +148,46 @@ export async function renderId(canvas: HTMLCanvasElement, input: RenderInput, qr
   ctx.font = `900 36px ${DISPLAY}`
   ctx.fillText('GOA', halfW / 2, 156)
 
-  // ── Top-right circular emblem (BUILD · SHIP · HACK) ───────────────────────
-  ctx.save()
-  ctx.translate(halfW - 118, 110)
-  // Outer circle
-  ctx.strokeStyle = '#c9a227'
-  ctx.lineWidth = 2
-  ctx.beginPath()
-  ctx.arc(0, 0, 54, 0, Math.PI * 2)
-  ctx.stroke()
-  // Inner circle
-  ctx.lineWidth = 1
-  ctx.beginPath()
-  ctx.arc(0, 0, 44, 0, Math.PI * 2)
-  ctx.stroke()
-  // House icon
-  ctx.fillStyle = '#c9a227'
-  ctx.font = `700 13px ${BODY}`
-  ctx.textAlign = 'center'
-  ctx.fillText('BUILD · SHIP · HACK', 0, -22)
-  ctx.font = `22px ${BODY}`
-  ctx.fillText('🏠', 0, 4)
-  ctx.font = `600 11px ${BODY}`
-  ctx.fillText('HHG 2026', 0, 26)
-  ctx.restore()
+  // ── Top Right Official Emblem (Government of Goa Seal) ────────────────────
+  const emblem = await getEmblemImage()
+  if (emblem) {
+    ctx.save()
+    const embX = halfW - 170
+    const embY = 55
+    const embW = 120
+    const embH = 120
+
+    // Gold circular backing ring
+    ctx.strokeStyle = '#c9a227'
+    ctx.lineWidth = 2
+    ctx.beginPath()
+    ctx.arc(embX + embW / 2, embY + embH / 2, 66, 0, Math.PI * 2)
+    ctx.stroke()
+
+    ctx.lineWidth = 1
+    ctx.beginPath()
+    ctx.arc(embX + embW / 2, embY + embH / 2, 60, 0, Math.PI * 2)
+    ctx.stroke()
+
+    // Draw Official Emblem Image
+    ctx.drawImage(emblem, embX, embY, embW, embH)
+    ctx.restore()
+  } else {
+    // Fallback circular stamp
+    ctx.save()
+    ctx.translate(halfW - 118, 110)
+    ctx.strokeStyle = '#c9a227'
+    ctx.lineWidth = 2
+    ctx.beginPath()
+    ctx.arc(0, 0, 54, 0, Math.PI * 2)
+    ctx.stroke()
+    ctx.fillStyle = '#c9a227'
+    ctx.font = `700 13px ${BODY}`
+    ctx.textAlign = 'center'
+    ctx.fillText('GOVERNMENT OF GOA', 0, 4)
+    ctx.restore()
+  }
+
 
   // ── Main title: BUILDER PASSPORT ─────────────────────────────────────────
   ctx.fillStyle = '#ffffff'
