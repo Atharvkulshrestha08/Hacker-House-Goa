@@ -602,8 +602,6 @@ export async function renderId(canvas: HTMLCanvasElement, input: RenderInput, qr
 
   // 1. LEFT: Full-width Barcode + Passport serial number underneath
   const BC_X = R + PAD
-  // 1. LEFT: Full-width Barcode + Passport serial number underneath
-  const BC_X = R + PAD
   const BC_W = 340
   const BC_H = 85
 
