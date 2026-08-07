@@ -102,436 +102,773 @@ export async function renderId(canvas: HTMLCanvasElement, input: RenderInput, qr
 
   const halfW = W / 2 // 1200px each page
 
-  // ==================== LEFT PAGE (PASSPORT COVER) ====================
-  // Dark Emerald Green Background (#062a1c) with luxury paper texture feel
-  ctx.fillStyle = '#062a1c'
+  // ═══════════════════════════════════════════════════════════════════════════
+  //  LEFT PAGE  — Dark emerald cover with Goa illustration
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // Base: rich dark forest green
+  ctx.fillStyle = '#0b2d1e'
   ctx.fillRect(0, 0, halfW, H)
 
-  // Topographic Guilloché Security Pattern (Ellipses with subtle gold accent)
-  ctx.strokeStyle = 'rgba(212, 175, 55, 0.05)'
-  ctx.lineWidth = 1.5
-  for (let i = 1; i <= 20; i++) {
+  // Subtle security guilloche lines (very faint gold)
+  ctx.strokeStyle = 'rgba(212,175,55,0.04)'
+  ctx.lineWidth = 1.2
+  for (let gi = 1; gi <= 22; gi++) {
     ctx.beginPath()
-    ctx.ellipse(halfW / 2, H / 2, i * 55, i * 38, 0, 0, Math.PI * 2)
+    ctx.ellipse(halfW / 2, H * 0.5, gi * 48, gi * 34, 0, 0, Math.PI * 2)
     ctx.stroke()
   }
 
-  // Header "ISSUED BY HACKER HOUSE GOA"
-  ctx.fillStyle = '#d4af37'
-  ctx.font = `700 18px ${BODY}`
+  // ── Header: ISSUED BY / HACKER HOUSE GOA ─────────────────────────────────
+  ctx.textBaseline = 'alphabetic'
+  ctx.fillStyle = '#c9a227'
+  ctx.font = `600 19px ${BODY}`
   ctx.textAlign = 'center'
-  ctx.fillText('ISSUED BY', halfW / 2, 80)
+  ctx.fillText('ISSUED BY', halfW / 2, 72)
 
   ctx.fillStyle = '#ffffff'
-  ctx.font = `900 32px ${DISPLAY}`
-  ctx.fillText('HACKER HOUSE GOA', halfW / 2, 125)
+  ctx.font = `900 36px ${DISPLAY}`
+  ctx.fillText('HACKER HOUSE', halfW / 2, 116)
+  ctx.fillStyle = '#c9a227'
+  ctx.font = `900 36px ${DISPLAY}`
+  ctx.fillText('GOA', halfW / 2, 156)
 
-  // Top Right Emblem Stamp: "BUILD · SHIP · HACK"
+  // ── Top-right circular emblem (BUILD · SHIP · HACK) ───────────────────────
   ctx.save()
-  ctx.translate(halfW - 130, 110)
-  ctx.strokeStyle = '#d4af37'
-  ctx.lineWidth = 1.5
-  ctx.beginPath()
-  ctx.arc(0, 0, 48, 0, Math.PI * 2)
-  ctx.stroke()
-  ctx.fillStyle = '#d4af37'
-  ctx.font = `700 10px ${BODY}`
-  ctx.fillText('BUILD · SHIP · HACK', 0, -36)
-  ctx.fillText('🌴 🏠 🌴', 0, 6)
-  ctx.restore()
-
-  // Large Title: BUILDER PASSPORT
-  ctx.fillStyle = '#ffffff'
-  ctx.font = `900 105px ${DISPLAY}`
-  ctx.fillText('BUILDER', halfW / 2, 260)
-  ctx.fillText('PASSPORT', halfW / 2, 360)
-
-  // Small Flight Path Line Accent
-  ctx.strokeStyle = '#d4af37'
+  ctx.translate(halfW - 118, 110)
+  // Outer circle
+  ctx.strokeStyle = '#c9a227'
   ctx.lineWidth = 2
   ctx.beginPath()
-  ctx.moveTo(120, 405)
-  ctx.lineTo(halfW / 2 - 35, 405)
-  ctx.moveTo(halfW / 2 + 35, 405)
-  ctx.lineTo(halfW - 120, 405)
+  ctx.arc(0, 0, 54, 0, Math.PI * 2)
   ctx.stroke()
-  ctx.fillStyle = '#d4af37'
-  ctx.font = `20px ${BODY}`
-  ctx.fillText('✈', halfW / 2, 412)
-
-  // Goan Coastal & Architecture Editorial Illustration (occupying 500px height)
-  const skyY = 440
-  const illH = 500
-  const illW = halfW - 160 // 1040px wide
-
-  // Sunset Gradient Layer
-  const skyGrad = ctx.createLinearGradient(0, skyY, 0, skyY + illH)
-  skyGrad.addColorStop(0, '#062a1c')
-  skyGrad.addColorStop(0.35, '#c85a32')
-  skyGrad.addColorStop(0.65, '#e8985e')
-  skyGrad.addColorStop(1, '#1e756b')
-
-  ctx.fillStyle = skyGrad
-  roundedRect(ctx, 80, skyY, illW, illH, 24)
-  ctx.fill()
-
-  // Sun
-  ctx.fillStyle = '#f4c430'
-  ctx.beginPath()
-  ctx.arc(220, skyY + 220, 55, 0, Math.PI * 2)
-  ctx.fill()
-
-  // Portuguese Goan Church Silhouette
-  ctx.fillStyle = '#fcf8ec'
-  ctx.fillRect(halfW / 2 - 80, skyY + 160, 160, 140)
-  ctx.beginPath()
-  ctx.moveTo(halfW / 2 - 100, skyY + 160)
-  ctx.lineTo(halfW / 2, skyY + 70)
-  ctx.lineTo(halfW / 2 + 100, skyY + 160)
-  ctx.closePath()
-  ctx.fill()
-
-  // Roof Lines Accent
-  ctx.fillStyle = '#9e2a2b'
-  ctx.beginPath()
-  ctx.moveTo(halfW / 2 - 100, skyY + 160)
-  ctx.lineTo(halfW / 2, skyY + 70)
-  ctx.lineTo(halfW / 2 + 100, skyY + 160)
-  ctx.lineTo(halfW / 2 + 100, skyY + 172)
-  ctx.lineTo(halfW / 2, skyY + 85)
-  ctx.lineTo(halfW / 2 - 100, skyY + 172)
-  ctx.closePath()
-  ctx.fill()
-
-  // Coastal Palms
-  ctx.fillStyle = '#062a1c'
-  ctx.fillRect(120, skyY + 100, 14, 240)
-  ctx.beginPath()
-  ctx.arc(127, skyY + 100, 50, 0, Math.PI * 2)
-  ctx.fill()
-
-  ctx.fillRect(halfW - 130, skyY + 120, 14, 220)
-  ctx.beginPath()
-  ctx.arc(halfW - 123, skyY + 120, 45, 0, Math.PI * 2)
-  ctx.fill()
-
-  // Ocean Water Horizon
-  ctx.fillStyle = '#1e756b'
-  ctx.fillRect(80, skyY + 300, illW, 200)
-
-  // Red Sailboat
-  ctx.fillStyle = '#ffffff'
-  ctx.beginPath()
-  ctx.moveTo(240, skyY + 320)
-  ctx.lineTo(240, skyY + 260)
-  ctx.lineTo(275, skyY + 315)
-  ctx.closePath()
-  ctx.fill()
-  ctx.fillStyle = '#9e2a2b'
-  ctx.fillRect(230, skyY + 320, 45, 10)
-
-  // Large Hindi Title "गोवा" & English GOA
-  ctx.fillStyle = '#e8985e'
-  ctx.font = `900 135px ${DISPLAY}`
-  ctx.fillText('गोवा', halfW / 2, 1190)
-
-  ctx.fillStyle = '#ffffff'
-  ctx.font = `900 48px ${DISPLAY}`
-  ctx.fillText('GOA', halfW / 2, 1270)
-
-  // Subtitle Motto
-  ctx.fillStyle = '#d4af37'
-  ctx.font = `700 20px ${BODY}`
-  ctx.fillText('🌴   ONE FRAME, WHOLE CREW   🌴', halfW / 2, 1360)
-
-  // Center Spine Shadow Split
-  const spineGrad = ctx.createLinearGradient(halfW - 30, 0, halfW + 30, 0)
-  spineGrad.addColorStop(0, 'rgba(0, 0, 0, 0.4)')
-  spineGrad.addColorStop(0.5, 'rgba(0, 0, 0, 0.75)')
-  spineGrad.addColorStop(1, 'rgba(0, 0, 0, 0.4)')
-  ctx.fillStyle = spineGrad
-  ctx.fillRect(halfW - 25, 0, 50, H)
-
-  // ==================== RIGHT PAGE (PASSPORT IDENTITY DATA PAGE) ====================
-  // Warm Ivory Security Paper Background
-  ctx.fillStyle = '#f9f6ed'
-  ctx.fillRect(halfW, 0, halfW, H)
-
-  // Faint map watermark lines
-  ctx.strokeStyle = 'rgba(30, 117, 107, 0.035)'
+  // Inner circle
   ctx.lineWidth = 1
-  for (let y = 40; y < H; y += 28) {
+  ctx.beginPath()
+  ctx.arc(0, 0, 44, 0, Math.PI * 2)
+  ctx.stroke()
+  // House icon
+  ctx.fillStyle = '#c9a227'
+  ctx.font = `700 13px ${BODY}`
+  ctx.textAlign = 'center'
+  ctx.fillText('BUILD · SHIP · HACK', 0, -22)
+  ctx.font = `22px ${BODY}`
+  ctx.fillText('🏠', 0, 4)
+  ctx.font = `600 11px ${BODY}`
+  ctx.fillText('HHG 2026', 0, 26)
+  ctx.restore()
+
+  // ── Main title: BUILDER PASSPORT ─────────────────────────────────────────
+  ctx.fillStyle = '#ffffff'
+  ctx.font = `900 118px ${DISPLAY}`
+  ctx.textAlign = 'center'
+  ctx.fillText('BUILDER', halfW / 2, 288)
+  ctx.fillText('PASSPORT', halfW / 2, 400)
+
+  // Divider with airplane ✈
+  ctx.strokeStyle = '#c9a227'
+  ctx.lineWidth = 2
+  ctx.beginPath()
+  ctx.moveTo(100, 434); ctx.lineTo(halfW / 2 - 38, 434)
+  ctx.moveTo(halfW / 2 + 38, 434); ctx.lineTo(halfW - 100, 434)
+  ctx.stroke()
+  ctx.fillStyle = '#c9a227'
+  ctx.font = `26px ${BODY}`
+  ctx.fillText('✈', halfW / 2, 442)
+
+  // ── Illustration Panel ────────────────────────────────────────────────────
+  // Panel occupies y: 460 → 1100 (640px tall), padded 70px each side
+  const IL = 70          // left x of illustration
+  const IR = halfW - 70  // right x
+  const IW = IR - IL     // width: ~1060
+  const IT = 460         // top y
+  const IB = 1100        // bottom y
+  const IH = IB - IT     // height: 640
+
+  // Clip illustration to rounded rect
+  ctx.save()
+  roundedRect(ctx, IL, IT, IW, IH, 28)
+  ctx.clip()
+
+  // Sky gradient: lush light green → warm sandy horizon
+  const skyG = ctx.createLinearGradient(0, IT, 0, IT + IH * 0.55)
+  skyG.addColorStop(0,   '#1a6b3c')   // deep green top
+  skyG.addColorStop(0.4, '#3a9a5c')   // mid green
+  skyG.addColorStop(0.7, '#f5c06a')   // warm golden horizon
+  skyG.addColorStop(1,   '#e6955a')   // sandy orange at waterline
+  ctx.fillStyle = skyG
+  ctx.fillRect(IL, IT, IW, IH)
+
+  // Ocean / water (bottom third of illustration)
+  const waterY = IT + IH * 0.60
+  const oceanG = ctx.createLinearGradient(0, waterY, 0, IB)
+  oceanG.addColorStop(0, '#1a7a6a')
+  oceanG.addColorStop(1, '#0f5a52')
+  ctx.fillStyle = oceanG
+  ctx.fillRect(IL, waterY, IW, IB - waterY)
+
+  // Beach strip between ocean and sky
+  ctx.fillStyle = '#e8c97a'
+  ctx.fillRect(IL, waterY - 24, IW, 28)
+
+  // ── Sun (large yellow circle, lower-left of sky) ─────────────────────────
+  ctx.fillStyle = '#f9d030'
+  ctx.beginPath()
+  ctx.arc(IL + 200, IT + IH * 0.38, 72, 0, Math.PI * 2)
+  ctx.fill()
+
+  // ── Fluffy Clouds ─────────────────────────────────────────────────────────
+  function drawCloud(cx: number, cy: number, s: number) {
+    ctx.fillStyle = '#e8f5e4'
+    ;[[0, 0, s], [-s*0.9, s*0.2, s*0.7], [s*0.9, s*0.2, s*0.7],
+      [-s*0.5, -s*0.3, s*0.6], [s*0.5, -s*0.3, s*0.55]
+    ].forEach(([dx, dy, r]) => {
+      ctx.beginPath()
+      ctx.arc(cx + dx, cy + dy, r, 0, Math.PI * 2)
+      ctx.fill()
+    })
+  }
+  drawCloud(IL + 700, IT + 100, 55)
+  drawCloud(IL + 880, IT + 160, 42)
+  drawCloud(IL + 350, IT + 70,  38)
+  drawCloud(IL + 820, IT + 70,  32)
+
+  // ── Portuguese Goan Church (centre) ───────────────────────────────────────
+  const CX = halfW / 2
+  const CY = IT + IH * 0.58 // base of church = just above waterline
+
+  // Main body — cream/ivory
+  ctx.fillStyle = '#fdf4d0'
+  ctx.fillRect(CX - 110, CY - 200, 220, 200)
+
+  // Red roof / pediment
+  ctx.fillStyle = '#b83232'
+  ctx.beginPath()
+  ctx.moveTo(CX - 130, CY - 200)
+  ctx.lineTo(CX,       CY - 310)
+  ctx.lineTo(CX + 130, CY - 200)
+  ctx.closePath()
+  ctx.fill()
+
+  // Pediment accent (darker edge)
+  ctx.fillStyle = '#8c1e1e'
+  ctx.beginPath()
+  ctx.moveTo(CX - 130, CY - 200)
+  ctx.lineTo(CX,       CY - 310)
+  ctx.lineTo(CX + 130, CY - 200)
+  ctx.lineTo(CX + 130, CY - 190)
+  ctx.lineTo(CX,       CY - 298)
+  ctx.lineTo(CX - 130, CY - 190)
+  ctx.closePath()
+  ctx.fill()
+
+  // Bell tower
+  ctx.fillStyle = '#fdf4d0'
+  ctx.fillRect(CX - 32, CY - 360, 64, 160)
+  // Tower roof
+  ctx.fillStyle = '#b83232'
+  ctx.beginPath()
+  ctx.moveTo(CX - 40, CY - 360)
+  ctx.lineTo(CX,      CY - 418)
+  ctx.lineTo(CX + 40, CY - 360)
+  ctx.closePath()
+  ctx.fill()
+
+  // Arched window on tower
+  ctx.fillStyle = '#0b2d1e'
+  ctx.fillRect(CX - 10, CY - 340, 20, 26)
+  ctx.beginPath()
+  ctx.arc(CX, CY - 340, 10, Math.PI, 0)
+  ctx.fill()
+
+  // Church door arch
+  ctx.fillStyle = '#0b2d1e'
+  ctx.fillRect(CX - 20, CY - 80, 40, 80)
+  ctx.beginPath()
+  ctx.arc(CX, CY - 80, 20, Math.PI, 0)
+  ctx.fill()
+
+  // Windows (two arched)
+  ctx.fillStyle = '#0b2d1e'
+  ;[-60, 60].forEach(ox => {
+    ctx.fillRect(CX + ox - 14, CY - 160, 28, 40)
     ctx.beginPath()
-    ctx.moveTo(halfW + 30, y)
-    ctx.lineTo(W - 30, y)
+    ctx.arc(CX + ox, CY - 160, 14, Math.PI, 0)
+    ctx.fill()
+  })
+
+  // ── Left tall palm ────────────────────────────────────────────────────────
+  const drawPalm = (px: number, baseY: number, trunkH: number, lean: number) => {
+    // Trunk (slightly curved)
+    ctx.strokeStyle = '#1a3d1a'
+    ctx.lineWidth = 14
+    ctx.lineCap = 'round'
+    ctx.beginPath()
+    ctx.moveTo(px, baseY)
+    ctx.quadraticCurveTo(px + lean * 0.5, baseY - trunkH * 0.5, px + lean, baseY - trunkH)
     ctx.stroke()
+
+    // Fronds (8 leaf fans)
+    const topX = px + lean
+    const topY = baseY - trunkH
+    const fronds = [
+      [-80, -60], [-50, -90], [0, -100], [50, -90],
+      [80, -60],  [70, -20],  [-70, -20], [-30, -110],
+    ]
+    ctx.lineWidth = 8
+    fronds.forEach(([fx, fy]) => {
+      ctx.strokeStyle = '#0f6b30'
+      ctx.beginPath()
+      ctx.moveTo(topX, topY)
+      ctx.quadraticCurveTo(topX + fx * 0.5, topY + fy * 0.6, topX + fx, topY + fy)
+      ctx.stroke()
+    })
+    // Coconuts
+    ctx.fillStyle = '#5a3010'
+    ctx.beginPath()
+    ctx.arc(topX - 8, topY + 12, 14, 0, Math.PI * 2)
+    ctx.fill()
+    ctx.beginPath()
+    ctx.arc(topX + 10, topY + 18, 12, 0, Math.PI * 2)
+    ctx.fill()
   }
 
-  // ── Header ──────────────────────────────────────────────────────────────────
-  ctx.fillStyle = '#0f241c'
-  ctx.font = `900 52px ${DISPLAY}`
-  ctx.textAlign = 'center'
-  ctx.fillText('HACKER HOUSE GOA 2026', halfW + halfW / 2, 88)
+  drawPalm(IL + 130, IB,       380, -30)   // far left, leaning left slightly
+  drawPalm(IL + 240, IB,       320,  40)   // second left, leaning right
+  drawPalm(IR - 130, IB,       360,  30)   // far right, leaning right
+  drawPalm(IR - 240, IB,       290, -40)   // second right
 
-  ctx.fillStyle = '#6c4a2a'
-  ctx.font = `700 22px ${BODY}`
-  ctx.fillText('OFFICIAL BUILDER PASSPORT', halfW + halfW / 2, 126)
+  // ── Hot air balloon ───────────────────────────────────────────────────────
+  const BX = IL + IW * 0.72
+  const BY = IT + 180
 
-  // ── Rubber Stamp (top right) ─────────────────────────────────────────────
-  ctx.save()
-  ctx.translate(W - 170, 120)
-  ctx.rotate(0.06)
-  ctx.strokeStyle = '#c85a32'
-  ctx.lineWidth = 3.5
-  roundedRect(ctx, -95, -52, 190, 104, 14)
+  // Balloon envelope
+  const balloonG = ctx.createRadialGradient(BX, BY, 10, BX, BY, 65)
+  balloonG.addColorStop(0, '#e04060')
+  balloonG.addColorStop(1, '#8b1a30')
+  ctx.fillStyle = balloonG
+  ctx.beginPath()
+  ctx.ellipse(BX, BY, 62, 78, 0, 0, Math.PI * 2)
+  ctx.fill()
+
+  // Balloon stripes
+  ctx.strokeStyle = 'rgba(255,255,255,0.3)'
+  ctx.lineWidth = 6
+  ;[-24, 0, 24].forEach(ox => {
+    ctx.beginPath()
+    ctx.moveTo(BX + ox, BY - 70)
+    ctx.lineTo(BX + ox, BY + 70)
+    ctx.stroke()
+  })
+
+  // Basket ropes
+  ctx.strokeStyle = '#8b6000'
+  ctx.lineWidth = 2
+  ;[-26, 26].forEach(ox => {
+    ctx.beginPath()
+    ctx.moveTo(BX + ox, BY + 72)
+    ctx.lineTo(BX + ox * 0.5, BY + 100)
+    ctx.stroke()
+  })
+
+  // Basket
+  ctx.fillStyle = '#8b6000'
+  ctx.fillRect(BX - 24, BY + 100, 48, 26)
+  ctx.strokeStyle = '#5a3a00'
+  ctx.lineWidth = 2
+  ctx.strokeRect(BX - 24, BY + 100, 48, 26)
+
+  // ── Sailboat ──────────────────────────────────────────────────────────────
+  const SBX = IL + 260
+  const SBY = waterY + 8
+
+  // Sail (white triangle)
+  ctx.fillStyle = '#ffffff'
+  ctx.beginPath()
+  ctx.moveTo(SBX, SBY - 110)
+  ctx.lineTo(SBX, SBY)
+  ctx.lineTo(SBX + 70, SBY)
+  ctx.closePath()
+  ctx.fill()
+
+  // Hull
+  ctx.fillStyle = '#b83232'
+  ctx.beginPath()
+  ctx.moveTo(SBX - 12, SBY)
+  ctx.lineTo(SBX + 80, SBY)
+  ctx.lineTo(SBX + 65, SBY + 22)
+  ctx.lineTo(SBX + 2,  SBY + 22)
+  ctx.closePath()
+  ctx.fill()
+
+  // Small birds (V shapes)
+  ctx.strokeStyle = '#0b2d1e'
+  ctx.lineWidth = 2.5
+  ;[[700, 130], [750, 100], [800, 145], [860, 118]].forEach(([bx, by]) => {
+    ctx.beginPath()
+    ctx.moveTo(IL + bx - 14, IT + by)
+    ctx.lineTo(IL + bx,      IT + by - 10)
+    ctx.lineTo(IL + bx + 14, IT + by)
+    ctx.stroke()
+  })
+
+  ctx.restore() // end illustration clip
+
+  // Illustration border
+  ctx.strokeStyle = 'rgba(201,162,39,0.5)'
+  ctx.lineWidth = 3
+  roundedRect(ctx, IL, IT, IW, IH, 28)
   ctx.stroke()
-  ctx.fillStyle = '#c85a32'
-  ctx.font = `900 30px ${DISPLAY}`
+
+  // ── गोवा / GOA / ONE FRAME WHOLE CREW ─────────────────────────────────────
+  // "गोवा" in large warm orange-gold
+  ctx.fillStyle = '#e8985e'
+  ctx.font = `900 148px ${DISPLAY}`
   ctx.textAlign = 'center'
-  ctx.fillText('FRAME IN', 0, -10)
+  ctx.fillText('गोवा', halfW / 2, 1230)
+
+  // "GOA" in white, smaller
+  ctx.fillStyle = '#ffffff'
+  ctx.font = `900 52px ${DISPLAY}`
+  ctx.fillText('GOA', halfW / 2, 1300)
+
+  // Divider tick marks
+  ctx.strokeStyle = 'rgba(201,162,39,0.5)'
+  ctx.lineWidth = 2
+  ctx.beginPath()
+  ctx.moveTo(halfW / 2 - 80, 1320); ctx.lineTo(halfW / 2 - 20, 1320)
+  ctx.moveTo(halfW / 2 + 20, 1320); ctx.lineTo(halfW / 2 + 80, 1320)
+  ctx.stroke()
+
+  // "ONE FRAME, WHOLE CREW" motto
+  ctx.fillStyle = '#c9a227'
+  ctx.font = `700 22px ${BODY}`
+  ctx.fillText('🌴  ONE FRAME, WHOLE CREW  🌴', halfW / 2, 1364)
+
+  // Bottom website / globe
+  ctx.fillStyle = 'rgba(201,162,39,0.6)'
+  ctx.font = `600 16px ${BODY}`
+  ctx.fillText('🌐  hhgoa.com  ·  #FrameInGoa', halfW / 2, 1420)
+
+  // ── Spine shadow (center book fold) ──────────────────────────────────────
+  const spineGrad = ctx.createLinearGradient(halfW - 30, 0, halfW + 30, 0)
+  spineGrad.addColorStop(0,   'rgba(0,0,0,0.35)')
+  spineGrad.addColorStop(0.5, 'rgba(0,0,0,0.70)')
+  spineGrad.addColorStop(1,   'rgba(0,0,0,0.35)')
+  ctx.fillStyle = spineGrad
+  ctx.fillRect(halfW - 22, 0, 44, H)
+
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  //  RIGHT PAGE  (x: 1200–2400, y: 0–1600)
+  //  Based on reference image — cream paper, centered header, photo left,
+  //  identity right, 3-col metadata grid, footer barcode/seal/signature
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // ── Background: warm ivory paper ──────────────────────────────────────────
+  ctx.fillStyle = '#f8f4e8'
+  ctx.fillRect(halfW, 0, halfW, H)
+
+  // Subtle topographic map lines (very faint)
+  ctx.save()
+  ctx.strokeStyle = 'rgba(10, 61, 46, 0.04)'
+  ctx.lineWidth = 1
+  for (let ly = 20; ly < H; ly += 26) {
+    ctx.beginPath()
+    ctx.moveTo(halfW + 20, ly)
+    ctx.lineTo(W - 20, ly)
+    ctx.stroke()
+  }
+  ctx.restore()
+
+  // ── Header (centered across full right page) ──────────────────────────────
+  // "HACKER HOUSE GOA 2026" — bold dark ink, centered
+  ctx.textBaseline = 'alphabetic'
+  ctx.fillStyle = '#0e1e18'
+  ctx.font = `900 58px ${DISPLAY}`
+  ctx.textAlign = 'center'
+  ctx.fillText('HACKER HOUSE GOA 2026', halfW + 600, 80)
+
+  // "OFFICIAL BUILDER PASSPORT" — smaller rust subtitle
+  ctx.fillStyle = '#7a3e1a'
+  ctx.font = `600 24px ${BODY}`
+  ctx.fillText('OFFICIAL BUILDER PASSPORT', halfW + 600, 118)
+
+  // Thin separator line under header
+  ctx.strokeStyle = 'rgba(14, 30, 24, 0.10)'
+  ctx.lineWidth = 1.5
+  ctx.beginPath()
+  ctx.moveTo(halfW + 60, 138)
+  ctx.lineTo(W - 60, 138)
+  ctx.stroke()
+
+  // ── "FRAME IN GOA 🌴" Rubber stamp (top-right, rotated) ─────────────────
+  ctx.save()
+  ctx.translate(W - 148, 108)
+  ctx.rotate(0.07)
+  ctx.strokeStyle = '#c04a1f'
+  ctx.lineWidth = 3
+  roundedRect(ctx, -80, -46, 160, 92, 12)
+  ctx.stroke()
+  ctx.fillStyle = '#c04a1f'
+  ctx.font = `900 27px ${DISPLAY}`
+  ctx.textAlign = 'center'
+  ctx.fillText('FRAME IN', 0, -8)
   ctx.fillText('GOA 🌴', 0, 28)
   ctx.restore()
 
-  // ── Photo section (left column) ──────────────────────────────────────────
-  const px = halfW + 80
-  const py = 170
-  const pw = 380
-  const ph = 490
+  // ═══════════════════════════════════════════════════════════════════════════
+  //  MAIN BODY — Two columns:  [Photo]  |  [Name + Class + Stack]
+  // ═══════════════════════════════════════════════════════════════════════════
 
+  // Photo column: x starts 60px inside right page
+  const R = halfW  // 1200 — left edge of right page
+  const PAD = 60   // inner padding from edge of right page
+
+  const PHOTO_X  = R + PAD          // 1260
+  const PHOTO_Y  = 155              // top of photo
+  const PHOTO_W  = 370              // width of photo box
+  const PHOTO_H  = 490              // height of photo box
+
+  // ── Photo frame ───────────────────────────────────────────────────────────
   // Drop shadow
-  ctx.shadowColor = 'rgba(0,0,0,0.20)'
-  ctx.shadowBlur = 22
+  ctx.save()
+  ctx.shadowColor = 'rgba(0,0,0,0.22)'
+  ctx.shadowBlur = 28
+  ctx.shadowOffsetX = 4
+  ctx.shadowOffsetY = 6
   ctx.fillStyle = '#ffffff'
-  roundedRect(ctx, px - 8, py - 8, pw + 16, ph + 16, 26)
+  roundedRect(ctx, PHOTO_X - 6, PHOTO_Y - 6, PHOTO_W + 12, PHOTO_H + 12, 20)
   ctx.fill()
-  ctx.shadowBlur = 0
+  ctx.restore()
 
   // Gold border
-  ctx.strokeStyle = '#d4af37'
-  ctx.lineWidth = 3.5
-  roundedRect(ctx, px - 8, py - 8, pw + 16, ph + 16, 26)
+  ctx.strokeStyle = '#c9a227'
+  ctx.lineWidth = 4
+  roundedRect(ctx, PHOTO_X - 6, PHOTO_Y - 6, PHOTO_W + 12, PHOTO_H + 12, 20)
   ctx.stroke()
 
+  // Photo itself (clipped)
   if (input.photo) {
-    drawCoveredImage(ctx, input.photo, px, py, pw, ph, input.photoWidth, input.photoHeight, input.viewport)
+    ctx.save()
+    roundedRect(ctx, PHOTO_X, PHOTO_Y, PHOTO_W, PHOTO_H, 16)
+    ctx.clip()
+    drawCoveredImage(
+      ctx, input.photo,
+      PHOTO_X, PHOTO_Y, PHOTO_W, PHOTO_H,
+      input.photoWidth, input.photoHeight,
+      input.viewport,
+    )
+    ctx.restore()
   } else {
-    ctx.fillStyle = '#0f241c'
-    ctx.fillRect(px, py, pw, ph)
-    ctx.fillStyle = '#ffffff'
-    ctx.font = `28px ${DISPLAY}`
+    // Placeholder
+    ctx.save()
+    ctx.fillStyle = '#d0c9b8'
+    roundedRect(ctx, PHOTO_X, PHOTO_Y, PHOTO_W, PHOTO_H, 16)
+    ctx.fill()
+    ctx.fillStyle = '#7a7060'
+    ctx.font = `600 22px ${BODY}`
     ctx.textAlign = 'center'
-    ctx.fillText('YOUR PHOTO HERE', px + pw / 2, py + ph / 2)
+    ctx.fillText('YOUR PHOTO HERE', PHOTO_X + PHOTO_W / 2, PHOTO_Y + PHOTO_H / 2)
+    ctx.restore()
   }
 
-  // Active badge over photo
-  ctx.fillStyle = 'rgba(15,36,28,0.85)'
-  roundedRect(ctx, px + 16, py + 16, 140, 40, 20)
+  // ACTIVE pill over photo (top-left corner)
+  ctx.fillStyle = 'rgba(10, 30, 20, 0.82)'
+  roundedRect(ctx, PHOTO_X + 14, PHOTO_Y + 14, 148, 42, 21)
   ctx.fill()
-  ctx.fillStyle = '#2a9d8f'
+  // Green dot
+  ctx.fillStyle = '#22c55e'
   ctx.beginPath()
-  ctx.arc(px + 36, py + 36, 8, 0, Math.PI * 2)
+  ctx.arc(PHOTO_X + 37, PHOTO_Y + 35, 9, 0, Math.PI * 2)
   ctx.fill()
+  // "ACTIVE" text
   ctx.fillStyle = '#ffffff'
-  ctx.font = `700 17px ${BODY}`
+  ctx.font = `700 19px ${BODY}`
   ctx.textAlign = 'left'
-  ctx.fillText('ACTIVE', px + 52, py + 42)
+  ctx.fillText('ACTIVE', PHOTO_X + 54, PHOTO_Y + 42)
 
-  // "Builder Since" micro-label below photo
-  ctx.fillStyle = '#6c757d'
-  ctx.font = `600 16px ${BODY}`
-  ctx.fillText('BUILDER SINCE 2026', px, py + ph + 34)
+  // "BUILDER SINCE 2026" micro-label under photo
+  ctx.fillStyle = '#9a8e7a'
+  ctx.font = `600 17px ${BODY}`
+  ctx.textAlign = 'left'
+  ctx.fillText('🗓  BUILDER SINCE 2026', PHOTO_X, PHOTO_Y + PHOTO_H + 36)
 
   // ── Identity column (right of photo) ─────────────────────────────────────
-  const dx = halfW + 510
-  const rightColMaxW = W - 80 - dx
+  const ID_X = PHOTO_X + PHOTO_W + 60   // 1750  (starts 60px right of photo)
+  const ID_MAX_W = W - 60 - ID_X        // available width for name/badge/chips
 
-  // NAME – large bold
-  const lines = splitName(input.name)
-  ctx.fillStyle = '#0f241c'
+  // NAME — large, two-line, dark ink
+  const nameLines = splitName(input.name)
+  ctx.fillStyle = '#0e1e18'
   ctx.textAlign = 'left'
-  const fitted = fitText(ctx, lines[0], `76px ${DISPLAY}`, rightColMaxW)
-  ctx.font = fitted.font
-  ctx.fillText(lines[0], dx, py + 65)
-  if (lines[1]) {
-    const fitted2 = fitText(ctx, lines[1], `76px ${DISPLAY}`, rightColMaxW)
-    ctx.font = fitted2.font
-    ctx.fillText(lines[1], dx, py + 65 + fitted.size + 14)
+
+  const name0fit = fitText(ctx, nameLines[0], `80px ${DISPLAY}`, ID_MAX_W)
+  ctx.font = name0fit.font
+  ctx.fillText(nameLines[0], ID_X, PHOTO_Y + 80)
+
+  let nameBottomY = PHOTO_Y + 80
+  if (nameLines[1]) {
+    const name1fit = fitText(ctx, nameLines[1], `80px ${DISPLAY}`, ID_MAX_W)
+    ctx.font = name1fit.font
+    nameBottomY = PHOTO_Y + 80 + name0fit.size + 16
+    ctx.fillText(nameLines[1], ID_X, nameBottomY)
   }
 
-  const nameOffset = lines.length > 1 ? 65 + fitted.size + 14 : 65
+  // ── BUILDER CLASS ─────────────────────────────────────────────────────────
+  const CLASS_Y = nameBottomY + 48
 
-  // BUILDER CLASS label
-  const classY = py + nameOffset + 52
-  ctx.fillStyle = '#c85a32'
-  ctx.font = `700 17px ${BODY}`
-  ctx.fillText('BUILDER CLASS', dx, classY)
+  // Label
+  ctx.fillStyle = '#c04a1f'
+  ctx.font = `700 18px ${BODY}`
+  ctx.fillText('BUILDER CLASS', ID_X, CLASS_Y)
 
-  // Builder class pink badge
-  const badgeW = Math.min(rightColMaxW, 540)
-  ctx.fillStyle = '#e8355c'
-  roundedRect(ctx, dx, classY + 10, badgeW, 62, 18)
+  // Pink/magenta badge
+  const classText = `${input.builderClass}  👑`
+  ctx.font = `900 32px ${DISPLAY}`
+  const classTw = Math.min(ctx.measureText(classText).width + 52, ID_MAX_W)
+  ctx.fillStyle = '#e0185c'
+  roundedRect(ctx, ID_X, CLASS_Y + 12, classTw, 66, 18)
   ctx.fill()
   ctx.fillStyle = '#ffffff'
-  ctx.font = `900 32px ${DISPLAY}`
   ctx.textAlign = 'left'
-  ctx.fillText(`${input.builderClass} 👑`, dx + 22, classY + 56)
+  ctx.fillText(classText, ID_X + 22, CLASS_Y + 60)
 
-  // PRIMARY STACK label
-  const stackY = classY + 62 + 34
-  ctx.fillStyle = '#c85a32'
-  ctx.font = `700 17px ${BODY}`
-  ctx.fillText('PRIMARY STACK', dx, stackY)
+  // ── PRIMARY STACK ─────────────────────────────────────────────────────────
+  const STACK_Y = CLASS_Y + 66 + 32
 
-  // Stack chips
-  const stacks = (input.stackLabel || 'React · Node.js · TypeScript · Python').split(/[\s·,/]+/).filter(Boolean).slice(0, 5)
-  let currX = dx
-  stacks.forEach((st) => {
-    ctx.font = `700 20px ${BODY}`
-    const stw = ctx.measureText(st).width + 32
-    if (currX + stw > W - 60) return
-    ctx.fillStyle = '#0f241c'
-    roundedRect(ctx, currX, stackY + 10, stw, 44, 12)
+  ctx.fillStyle = '#c04a1f'
+  ctx.font = `700 18px ${BODY}`
+  ctx.fillText('PRIMARY STACK', ID_X, STACK_Y)
+
+  const rawStack = input.stackLabel || 'React · Node.js · TypeScript'
+  const stackItems = rawStack.split(/[\s·,/|]+/).filter(Boolean).slice(0, 6)
+  let chipX = ID_X
+  const CHIP_H = 46
+  const CHIP_Y = STACK_Y + 12
+
+  stackItems.forEach((label) => {
+    ctx.font = `700 22px ${BODY}`
+    const tw = ctx.measureText(label).width
+    const chipW = tw + 36
+    if (chipX + chipW > W - 50) return
+    // Chip background
+    ctx.fillStyle = '#1a2e24'
+    roundedRect(ctx, chipX, CHIP_Y, chipW, CHIP_H, 12)
     ctx.fill()
+    // Chip text
     ctx.fillStyle = '#ffffff'
     ctx.textAlign = 'left'
-    ctx.fillText(st, currX + 16, stackY + 39)
-    currX += stw + 14
+    ctx.fillText(label, chipX + 18, CHIP_Y + 32)
+    chipX += chipW + 14
   })
 
-  // ── Divider ───────────────────────────────────────────────────────────────
-  const gridY = Math.max(py + ph + 60, stackY + 100)
-  ctx.strokeStyle = 'rgba(15,36,28,0.14)'
+  // ═══════════════════════════════════════════════════════════════════════════
+  //  METADATA GRID (below photo and identity columns)
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // Divider — spans full right page width
+  const GRID_TOP = PHOTO_Y + PHOTO_H + 78   // ~723px — below photo
+  ctx.strokeStyle = 'rgba(14, 30, 24, 0.12)'
   ctx.lineWidth = 1.5
   ctx.beginPath()
-  ctx.moveTo(halfW + 60, gridY)
-  ctx.lineTo(W - 60, gridY)
+  ctx.moveTo(R + PAD, GRID_TOP)
+  ctx.lineTo(W - PAD, GRID_TOP)
   ctx.stroke()
 
-  // ── Passport Details Grid ──────────────────────────────────────────────────
-  const idNum = String(Math.abs(Math.floor(Math.sin(input.name.length * 7 + 1) * 8999)) + 1000).slice(-4)
-  const cols = [
-    { label: 'BUILDER ID',   val: `HHG26-${idNum}`,             icon: '' },
-    { label: 'PASSPORT NO.', val: `HHG-26-${idNum}-GOA`,        icon: '' },
-    { label: 'STATUS',       val: 'ACTIVE',                      icon: '🟢', isStatus: true },
-    { label: 'ORIGIN',       val: 'Ghaziabad, India',            icon: '📍' },
-    { label: 'DESTINATION',  val: 'Goa, India',                  icon: '📍' },
-    { label: 'MISSION',      val: 'BUILD · SHIP · HACK',         icon: '' },
+  // Build ID number deterministically from name
+  const nameHash = [...input.name].reduce((acc, c) => acc * 31 + c.charCodeAt(0), 0x1a2b)
+  const idNum = String(Math.abs(nameHash) % 9000 + 1000)
+
+  // 6 metadata fields in a 3-column × 2-row grid
+  // The QR code occupies position [1][2] (row 1, col 2 — the "MISSION" spot on the right)
+  // so we only render 5 regular items + 1 QR
+  const META_LABEL_SIZE = 16   // px for label text
+  const META_VAL_SIZE   = 28   // px for value text  (Anton)
+  const COL_W = (halfW - PAD * 2) / 3   // ~360px per column
+  const ROW_H = 126
+  const GRID_PAD_Y = 44
+
+  const metaItems = [
+    { label: 'BUILDER ID',   val: `HHG26-${idNum}`,          accent: false },
+    { label: 'PASSPORT NO.', val: `HHG-26-${idNum}-GOA`,     accent: false },
+    { label: 'STATUS',       val: '',                          accent: true,  isStatus: true },
+    { label: 'ORIGIN',       val: '📍  Ghaziabad, India',     accent: false },
+    { label: 'DESTINATION',  val: '📍  Goa, India',           accent: false },
+    { label: 'MISSION',      val: 'BUILD · SHIP · HACK',      accent: false },
   ]
 
-  const colW = (halfW - 220) / 3
-  const rowH = 118
-  cols.forEach((col, idx) => {
-    const c = idx % 3
-    const r = Math.floor(idx / 3)
-    const gx = halfW + 80 + c * colW
-    const gy = gridY + 44 + r * rowH
+  metaItems.forEach((item, i) => {
+    const col = i % 3
+    const row = Math.floor(i / 3)
+    const ix = R + PAD + col * COL_W
+    const iy = GRID_TOP + GRID_PAD_Y + row * ROW_H
 
     // Label
-    ctx.fillStyle = col.isStatus ? '#c85a32' : '#999'
-    ctx.font = `700 15px ${BODY}`
+    ctx.fillStyle = item.accent ? '#c04a1f' : '#9a8e7a'
+    ctx.font = `700 ${META_LABEL_SIZE}px ${BODY}`
     ctx.textAlign = 'left'
-    ctx.fillText(col.label, gx, gy)
+    ctx.fillText(item.label, ix, iy)
 
-    // Value (with icon prefix if any)
-    ctx.fillStyle = col.isStatus ? '#0a3d2e' : '#0f241c'
-    ctx.font = `900 28px ${DISPLAY}`
-    if (col.isStatus) {
-      // Green active badge
-      roundedRect(ctx, gx, gy + 10, 120, 44, 12)
-      ctx.fillStyle = '#14532d'
+    if (item.isStatus) {
+      // Green "ACTIVE" pill
+      ctx.fillStyle = '#166534'
+      roundedRect(ctx, ix, iy + 10, 130, 48, 14)
       ctx.fill()
       ctx.fillStyle = '#22c55e'
       ctx.beginPath()
-      ctx.arc(gx + 18, gy + 32, 7, 0, Math.PI * 2)
+      ctx.arc(ix + 22, iy + 34, 8, 0, Math.PI * 2)
       ctx.fill()
       ctx.fillStyle = '#ffffff'
-      ctx.font = `700 20px ${BODY}`
-      ctx.fillText('ACTIVE', gx + 32, gy + 38)
+      ctx.font = `700 22px ${BODY}`
+      ctx.textAlign = 'left'
+      ctx.fillText('ACTIVE', ix + 38, iy + 42)
     } else {
-      ctx.fillStyle = '#0f241c'
-      ctx.fillText((col.icon ? col.icon + ' ' : '') + col.val, gx, gy + 42)
+      ctx.fillStyle = '#0e1e18'
+      ctx.font = `900 ${META_VAL_SIZE}px ${DISPLAY}`
+      ctx.fillText(item.val, ix, iy + 44)
     }
   })
 
-  // ── QR Code (bottom right of right page, same row as grid row 2) ──────────
-  const qrSize = 164
-  const qrX = W - qrSize - 70
-  const qrY = gridY + 44 + rowH + 10
+  // ── QR Code — replaces the 3rd column of row 2 (MISSION area) ─────────────
+  // But we DO keep MISSION text; QR sits right of DESTINATION col (col=2, row=1)
+  // Actually: MISSION is col=2 row=1, QR goes to the same spot.
+  // Let's place QR in col=2 row=1 and not render MISSION text separately.
+  // (MISSION text rendered already above as item[5])
+  // Override: put QR between MISSION and right edge.
+  const QR_SIZE = 158
+  const QR_X = W - PAD - QR_SIZE
+  const QR_Y = GRID_TOP + GRID_PAD_Y + ROW_H + 10
 
-  // White rounded background for QR
+  // White square + gold border for QR
   ctx.fillStyle = '#ffffff'
-  ctx.strokeStyle = '#d4af37'
-  ctx.lineWidth = 2.5
-  roundedRect(ctx, qrX - 10, qrY - 10, qrSize + 20, qrSize + 20, 18)
+  ctx.shadowColor = 'rgba(0,0,0,0.12)'
+  ctx.shadowBlur = 12
+  roundedRect(ctx, QR_X - 8, QR_Y - 8, QR_SIZE + 16, QR_SIZE + 16, 16)
   ctx.fill()
+  ctx.shadowBlur = 0
+  ctx.strokeStyle = '#c9a227'
+  ctx.lineWidth = 2.5
+  roundedRect(ctx, QR_X - 8, QR_Y - 8, QR_SIZE + 16, QR_SIZE + 16, 16)
   ctx.stroke()
 
-  // Draw real QR or placeholder
   if (qrUrl) {
-    await drawQR(ctx, qrUrl, qrX, qrY, qrSize)
+    await drawQR(ctx, qrUrl, QR_X, QR_Y, QR_SIZE)
   } else {
-    // Fallback decorative QR pattern
-    ctx.fillStyle = '#0f241c'
-    for (let qxi = 0; qxi < 6; qxi++) {
-      for (let qyi = 0; qyi < 6; qyi++) {
-        if ((qxi + qyi) % 2 === 0 || qxi === qyi) {
-          ctx.fillRect(qrX + 14 + qxi * 23, qrY + 14 + qyi * 23, 17, 17)
-        }
-      }
-    }
+    // Fallback: draw a convincing fake QR pattern
+    ctx.fillStyle = '#0e1e18'
+    const cell = 14
+    const fakePattern = [
+      [1,1,1,1,1,1,1,0,1,0,1,1,1,1,1,1,1],
+      [1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,1],
+      [1,0,1,1,1,0,1,0,1,0,1,0,1,1,1,0,1],
+      [1,0,1,1,1,0,1,0,0,1,0,0,1,1,1,0,1],
+      [1,0,1,1,1,0,1,0,1,0,1,0,1,1,1,0,1],
+      [1,0,0,0,0,0,1,0,0,1,1,0,0,0,0,0,1],
+      [1,1,1,1,1,1,1,0,1,0,1,1,1,1,1,1,1],
+      [0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],
+      [1,0,1,1,0,1,1,0,0,0,1,0,1,1,0,1,0],
+      [0,1,0,1,0,0,0,1,1,1,0,1,0,0,1,0,1],
+      [1,1,1,1,1,1,1,0,0,1,1,0,1,0,0,1,1],
+    ]
+    fakePattern.forEach((row, ry) => {
+      row.forEach((bit, cx) => {
+        if (bit) ctx.fillRect(QR_X + 4 + cx * cell, QR_Y + 4 + ry * cell, cell - 1, cell - 1)
+      })
+    })
   }
 
-  // ── Footer ─────────────────────────────────────────────────────────────────
-  const footerY = H - 230
+  // ═══════════════════════════════════════════════════════════════════════════
+  //  FOOTER  — barcode  |  gold seal  |  signature
+  // ═══════════════════════════════════════════════════════════════════════════
 
-  // Barcode
-  ctx.fillStyle = '#0f241c'
-  for (let i = 0; i < 72; i++) {
-    const bw = (i % 3 === 0 ? 6 : i % 2 === 0 ? 3 : 2)
-    const bx = halfW + 80 + i * 7
-    if (bx + bw > halfW + 600) break
-    ctx.fillRect(bx, footerY + 40, bw, 65)
-  }
-  ctx.fillStyle = '#999'
-  ctx.font = `13px monospace`
-  ctx.textAlign = 'left'
-  ctx.fillText(`HHG-BOARDER-2026-${idNum}`, halfW + 80, footerY + 124)
+  const FOOTER_Y = H - 220  // ~1380
 
-  // Vintage Gold Seal Emblem
-  ctx.save()
-  ctx.translate(halfW + 730, footerY + 78)
-  ctx.strokeStyle = '#d4af37'
-  ctx.lineWidth = 3.5
-  ctx.beginPath()
-  ctx.arc(0, 0, 64, 0, Math.PI * 2)
-  ctx.stroke()
-  ctx.beginPath()
-  ctx.arc(0, 0, 52, 0, Math.PI * 2)
-  ctx.stroke()
-  ctx.fillStyle = '#d4af37'
-  ctx.font = `900 24px ${DISPLAY}`
-  ctx.textAlign = 'center'
-  ctx.fillText('HHG', 0, 8)
-  ctx.font = `700 13px ${BODY}`
-  ctx.fillText('★ VERIFIED ★', 0, 34)
-  ctx.fillText('★ PASSPORT ★', 0, -22)
-  ctx.restore()
-
-  // Cursive Signature
-  ctx.fillStyle = '#0f241c'
-  ctx.font = `italic 38px "Instrument Serif", Georgia, serif`
-  ctx.textAlign = 'center'
-  ctx.fillText(input.name || 'Builder', W - 195, footerY + 62)
-  ctx.strokeStyle = '#0f241c'
+  // Thin line above footer
+  ctx.strokeStyle = 'rgba(14, 30, 24, 0.10)'
   ctx.lineWidth = 1.5
   ctx.beginPath()
-  ctx.moveTo(W - 310, footerY + 74)
-  ctx.lineTo(W - 80, footerY + 74)
+  ctx.moveTo(R + PAD, FOOTER_Y)
+  ctx.lineTo(W - PAD, FOOTER_Y)
   ctx.stroke()
-  ctx.fillStyle = '#999'
+
+  // ── Barcode ───────────────────────────────────────────────────────────────
+  const BC_X = R + PAD
+  const BC_Y = FOOTER_Y + 34
+  const BC_W = 520
+  const BC_H = 70
+
+  ctx.fillStyle = '#0e1e18'
+  let bx = BC_X
+  for (let bi = 0; bi < 90 && bx < BC_X + BC_W; bi++) {
+    const bw = bi % 4 === 0 ? 7 : bi % 3 === 0 ? 4 : bi % 2 === 0 ? 3 : 2
+    const gap = bi % 5 === 0 ? 5 : 3
+    ctx.fillRect(bx, BC_Y, bw, BC_H)
+    bx += bw + gap
+  }
+
+  // Barcode number below bars
+  ctx.fillStyle = '#8a7e6e'
+  ctx.font = `14px monospace`
+  ctx.textAlign = 'left'
+  ctx.fillText(`HHG-BOARDER-2026-${idNum}`, BC_X, BC_Y + BC_H + 22)
+
+  // ── Gold Seal ─────────────────────────────────────────────────────────────
+  const SEAL_X = R + PAD + BC_W + 100
+  const SEAL_Y = FOOTER_Y + 34 + BC_H / 2
+
+  ctx.save()
+  ctx.translate(SEAL_X, SEAL_Y)
+
+  // Outer ring
+  ctx.strokeStyle = '#c9a227'
+  ctx.lineWidth = 4
+  ctx.beginPath()
+  ctx.arc(0, 0, 70, 0, Math.PI * 2)
+  ctx.stroke()
+
+  // Inner ring
+  ctx.lineWidth = 2.5
+  ctx.beginPath()
+  ctx.arc(0, 0, 56, 0, Math.PI * 2)
+  ctx.stroke()
+
+  // "VERIFIED" star text arcs (top + bottom)
+  ctx.fillStyle = '#c9a227'
   ctx.font = `700 13px ${BODY}`
-  ctx.fillText('AUTHORIZED SIGNATURE', W - 195, footerY + 98)
-  ctx.fillText('HACKER HOUSE GOA', W - 195, footerY + 116)
+  ctx.textAlign = 'center'
+  ctx.fillText('★  VERIFIED  ★', 0, -36)
+  ctx.fillText('★  PASSPORT  ★', 0, 48)
+
+  // "HHG" in center
+  ctx.font = `900 28px ${DISPLAY}`
+  ctx.fillText('HHG', 0, 10)
+
+  ctx.restore()
+
+  // ── Signature ────────────────────────────────────────────────────────────
+  const SIG_X = W - 320
+  const SIG_Y = FOOTER_Y + 30
+
+  // Cursive name
+  ctx.fillStyle = '#0e1e18'
+  ctx.font = `italic 40px "Instrument Serif", Georgia, serif`
+  ctx.textAlign = 'center'
+  ctx.fillText(input.name || 'Builder', SIG_X, SIG_Y + 52)
+
+  // Underline
+  ctx.strokeStyle = '#0e1e18'
+  ctx.lineWidth = 1.5
+  ctx.beginPath()
+  ctx.moveTo(SIG_X - 120, SIG_Y + 62)
+  ctx.lineTo(SIG_X + 120, SIG_Y + 62)
+  ctx.stroke()
+
+  // Label
+  ctx.fillStyle = '#9a8e7a'
+  ctx.font = `600 14px ${BODY}`
+  ctx.fillText('AUTHORIZED SIGNATURE', SIG_X, SIG_Y + 84)
+  ctx.fillText('HACKER HOUSE GOA', SIG_X, SIG_Y + 104)
 }
 
 
